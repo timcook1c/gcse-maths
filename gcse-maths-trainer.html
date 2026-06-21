@@ -1,0 +1,1140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GCSE Maths Trainer — Edexcel Higher</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --ink: #1a1a1a; --ink2: #4a4a4a; --ink3: #888;
+    --surface: #ffffff; --surface2: #f7f7f5; --surface3: #efefeb;
+    --border: #e0dfd8; --border2: #ccc;
+    --accent: #4338CA; --accent-light: #EEF2FF; --accent-mid: #818CF8;
+    --green: #16a34a; --green-light: #f0fdf4; --green-border: #86efac;
+    --amber: #b45309; --amber-light: #fffbeb; --amber-border: #fcd34d;
+    --red: #dc2626; --red-light: #fef2f2; --red-border: #fca5a5;
+    --teal: #0f766e; --teal-light: #e0fdf4;
+    --radius: 10px; --radius-sm: 7px;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f0ec;
+    color: var(--ink);
+    min-height: 100vh;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  /* ── Layout ── */
+  .shell {
+    display: grid;
+    grid-template-columns: 230px 1fr;
+    grid-template-rows: auto 1fr;
+    min-height: 100vh;
+    max-width: 1100px;
+    margin: 0 auto;
+    background: var(--surface);
+    box-shadow: 0 0 0 1px var(--border);
+  }
+  .topnav {
+    grid-column: 1 / -1;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .topnav-title { font-size: 15px; font-weight: 600; color: var(--ink); flex: 1; }
+  .topnav-sub { font-size: 12px; color: var(--ink3); }
+
+  .sidebar {
+    background: var(--surface2);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding: 12px 0;
+  }
+  .sidebar-section {
+    font-size: 10px; font-weight: 600; color: var(--ink3);
+    letter-spacing: .08em; text-transform: uppercase;
+    padding: 10px 16px 4px;
+  }
+  .sidebar-section:first-child { padding-top: 2px; }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 16px; cursor: pointer;
+    font-size: 12.5px; color: var(--ink2);
+    border-left: 2px solid transparent;
+    transition: all .12s; user-select: none; line-height: 1.3;
+  }
+  .nav-item:hover { background: var(--surface3); color: var(--ink); }
+  .nav-item.active { background: var(--accent-light); color: var(--accent); border-left-color: var(--accent); font-weight: 500; }
+  .nav-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .nav-label { flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .nav-cf { font-size: 10px; flex-shrink: 0; }
+  hr.nav-rule { border: none; border-top: 1px solid var(--border); margin: 6px 0; }
+  .sidebar-footer { margin-top: auto; padding: 10px 12px 6px; border-top: 1px solid var(--border); display: flex; flex-direction: column; gap: 6px; }
+  .pill {
+    font-size: 12px; font-weight: 500; padding: 7px 10px;
+    border-radius: var(--radius-sm); cursor: pointer;
+    text-align: center; border: none; width: 100%;
+  }
+  .pill-accent { background: var(--accent); color: #fff; }
+  .pill-amber { background: var(--amber); color: #fff; }
+  .pill:hover { opacity: .88; }
+
+  .main {
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .topbar {
+    padding: 14px 20px 10px;
+    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+    position: sticky; top: 0; background: var(--surface); z-index: 10;
+  }
+  .topbar h2 { font-size: 15px; font-weight: 600; color: var(--ink); flex: 1; }
+  .badge {
+    font-size: 10px; padding: 2px 8px; border-radius: 20px;
+    font-weight: 500; white-space: nowrap;
+  }
+  .content { padding: 18px 20px; flex: 1; }
+
+  /* ── Cards ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 13px 15px;
+    margin-bottom: 10px;
+  }
+  .card-label {
+    font-size: 10px; color: var(--ink3); font-weight: 600;
+    letter-spacing: .06em; text-transform: uppercase; margin-bottom: 6px;
+  }
+  .card-body { font-size: 13px; color: var(--ink2); line-height: 1.65; }
+
+  /* ── Steps ── */
+  .steps { display: flex; flex-direction: column; gap: 8px; }
+  .step { display: flex; gap: 10px; font-size: 13px; color: var(--ink2); line-height: 1.5; }
+  .step-num {
+    width: 20px; height: 20px; border-radius: 50%;
+    background: var(--accent-light); color: var(--accent);
+    font-size: 10px; font-weight: 600;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; margin-top: 2px;
+  }
+
+  /* ── Example / tip ── */
+  .q-block {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 10px 13px; font-size: 13px; color: var(--ink);
+    line-height: 1.65; font-style: italic; margin-bottom: 10px;
+  }
+  .tip {
+    font-size: 12px; color: var(--ink3); line-height: 1.5;
+    padding: 8px 10px; background: var(--surface2);
+    border-radius: var(--radius-sm); border-left: 3px solid var(--accent-mid);
+  }
+
+  /* ── Links ── */
+  .link-row { display: flex; flex-wrap: wrap; gap: 7px; }
+  .ext-link {
+    display: inline-flex; align-items: center; gap: 5px;
+    font-size: 12px; padding: 5px 10px;
+    border-radius: var(--radius-sm); border: 1px solid var(--border);
+    background: var(--surface2); color: var(--ink2);
+    text-decoration: none; cursor: pointer; transition: all .12s;
+  }
+  .ext-link:hover { border-color: var(--accent-mid); color: var(--accent); }
+
+  /* ── Confidence ── */
+  .conf-row { display: flex; gap: 7px; margin-top: 10px; align-items: center; flex-wrap: wrap; }
+  .conf-label { font-size: 12px; color: var(--ink3); }
+  .conf-btn {
+    font-size: 12px; padding: 5px 11px; border-radius: var(--radius-sm);
+    border: 1px solid var(--border); background: var(--surface2);
+    color: var(--ink2); cursor: pointer; transition: all .12s;
+  }
+  .conf-btn:hover { background: var(--surface3); }
+  .conf-btn.sel-g { background: var(--green-light); border-color: var(--green-border); color: var(--green); }
+  .conf-btn.sel-a { background: var(--amber-light); border-color: var(--amber-border); color: var(--amber); }
+  .conf-btn.sel-r { background: var(--red-light); border-color: var(--red-border); color: var(--red); }
+
+  /* ── Overview ── */
+  .overview-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 14px; }
+  .ov-card {
+    background: var(--surface2); border: 1px solid var(--border);
+    border-radius: var(--radius-sm); padding: 10px 12px; text-align: center;
+  }
+  .ov-num { font-size: 24px; font-weight: 600; color: var(--ink); }
+  .ov-lbl { font-size: 10px; color: var(--ink3); margin-top: 2px; }
+  .prog-list { display: flex; flex-direction: column; gap: 5px; }
+  .prog-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+  .prog-name { width: 160px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
+  .prog-name:hover { color: var(--accent); }
+  .prog-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
+  .prog-bar { height: 100%; border-radius: 3px; transition: width .3s; }
+  .prog-st { width: 16px; text-align: right; color: var(--ink3); font-size: 11px; }
+
+  /* ── Daily pick ── */
+  .daily-wrap {
+    border: 1px solid var(--amber-border); border-radius: var(--radius);
+    padding: 14px 16px; margin-bottom: 14px; background: var(--amber-light);
+  }
+  .daily-eyebrow { font-size: 10px; font-weight: 600; color: var(--amber); text-transform: uppercase; letter-spacing: .07em; margin-bottom: 3px; }
+  .daily-title { font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+  .daily-sub { font-size: 12px; color: var(--ink2); margin-bottom: 10px; line-height: 1.4; }
+
+  /* ── Suggest next ── */
+  .next-card {
+    border: 1px solid var(--border); border-left: 3px solid var(--accent);
+    border-radius: var(--radius); padding: 12px 15px; margin-bottom: 10px;
+  }
+
+  /* ── Buttons ── */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 7px 13px; border: none; border-radius: var(--radius-sm);
+    font-size: 12.5px; font-weight: 500; cursor: pointer; transition: opacity .12s;
+  }
+  .btn:hover { opacity: .88; }
+  .btn:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-accent { background: var(--accent); color: #fff; }
+  .btn-amber { background: var(--amber); color: #fff; }
+  .btn-teal { background: var(--teal); color: #fff; }
+  .btn-outline { background: var(--surface2); color: var(--ink2); border: 1px solid var(--border); }
+
+  /* ── AI Tutor panel ── */
+  .panel-wrap { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 10px; }
+  .panel-header {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; cursor: pointer; user-select: none;
+    border-bottom: 1px solid transparent;
+    transition: border-color .12s;
+  }
+  .panel-header.open { border-bottom-color: var(--border); }
+  .panel-header-accent { background: var(--accent-light); }
+  .panel-header-teal { background: var(--teal-light); }
+  .panel-title { font-size: 12.5px; font-weight: 500; flex: 1; }
+  .panel-title-accent { color: var(--accent); }
+  .panel-title-teal { color: var(--teal); }
+  .panel-chevron { font-size: 11px; color: var(--ink3); transition: transform .2s; }
+  .panel-chevron.open { transform: rotate(180deg); }
+  .panel-body { display: none; padding: 13px 14px; background: var(--surface); }
+  .panel-body.open { display: block; }
+
+  .tutor-quick { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 9px; }
+  .tutor-q {
+    font-size: 11px; padding: 3px 8px;
+    border: 1px solid var(--accent-mid); border-radius: 5px;
+    color: var(--accent); background: var(--accent-light);
+    cursor: pointer; transition: all .12s;
+  }
+  .tutor-q:hover { background: var(--accent); color: #fff; }
+  .tutor-msgs {
+    display: flex; flex-direction: column; gap: 8px;
+    max-height: 280px; overflow-y: auto; margin-bottom: 10px;
+    scroll-behavior: smooth;
+  }
+  .msg {
+    font-size: 12.5px; line-height: 1.55;
+    padding: 8px 11px; border-radius: 8px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .msg-user { background: var(--accent-light); color: var(--accent); align-self: flex-end; max-width: 85%; }
+  .msg-ai { background: var(--surface2); color: var(--ink2); align-self: flex-start; max-width: 90%; }
+  .msg-thinking { color: var(--ink3); font-style: italic; }
+  .tutor-input-row { display: flex; gap: 6px; }
+  .tutor-input {
+    flex: 1; font-size: 13px; padding: 7px 10px;
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    background: var(--surface); color: var(--ink); outline: none;
+    font-family: inherit;
+  }
+  .tutor-input:focus { border-color: var(--accent-mid); }
+
+  /* ── Question fetcher ── */
+  .q-item {
+    border: 1px solid var(--border); border-radius: var(--radius-sm);
+    padding: 11px 13px; margin-bottom: 8px; background: var(--surface);
+  }
+  .q-item-meta { font-size: 10px; color: var(--ink3); margin-bottom: 4px; }
+  .q-item-marks {
+    display: inline-block; font-size: 10px; padding: 2px 6px;
+    border-radius: 4px; background: var(--accent-light); color: var(--accent);
+    font-weight: 600; margin-bottom: 7px;
+  }
+  .q-item-text { font-size: 13px; color: var(--ink); line-height: 1.6; font-style: italic; margin-bottom: 8px; }
+  .q-nav { display: flex; gap: 7px; align-items: center; flex-wrap: wrap; }
+  .q-counter { font-size: 11px; color: var(--ink3); }
+
+  /* ── API key setup ── */
+  .setup-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; padding: 20px;
+  }
+  .setup-box {
+    background: var(--surface); border-radius: 14px;
+    padding: 28px 28px 24px; max-width: 460px; width: 100%;
+    box-shadow: 0 20px 60px rgba(0,0,0,.15);
+  }
+  .setup-title { font-size: 17px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+  .setup-sub { font-size: 13px; color: var(--ink2); line-height: 1.6; margin-bottom: 18px; }
+  .setup-sub a { color: var(--accent); }
+  .setup-label { font-size: 11px; font-weight: 600; color: var(--ink3); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 5px; }
+  .setup-input {
+    width: 100%; font-size: 13px; padding: 9px 11px;
+    border: 1px solid var(--border2); border-radius: var(--radius-sm);
+    background: var(--surface2); color: var(--ink); outline: none;
+    font-family: monospace; margin-bottom: 6px;
+  }
+  .setup-input:focus { border-color: var(--accent-mid); background: var(--surface); }
+  .setup-hint { font-size: 11px; color: var(--ink3); margin-bottom: 16px; line-height: 1.5; }
+  .setup-hint a { color: var(--accent); }
+  .setup-actions { display: flex; gap: 8px; justify-content: flex-end; }
+  .setup-skip { font-size: 12px; color: var(--ink3); background: none; border: none; cursor: pointer; padding: 4px 8px; }
+  .setup-skip:hover { color: var(--ink); }
+  .key-status { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--ink3); }
+  .key-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+  .key-dot.active { background: var(--green); }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .shell { grid-template-columns: 1fr; }
+    .sidebar { display: none; }
+    .topnav { flex-wrap: wrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- Top nav -->
+  <header class="topnav">
+    <div>
+      <div class="topnav-title">📐 GCSE Maths Trainer</div>
+      <div class="topnav-sub">Edexcel Higher — 4 &amp; 5 mark question mastery</div>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+      <div class="key-status" id="keyStatus">
+        <span class="key-dot" id="keyDot"></span>
+        <span id="keyLabel">No API key</span>
+      </div>
+      <button class="btn btn-outline" style="font-size:11px;padding:5px 9px" onclick="showSetup()">⚙ API key</button>
+    </div>
+  </header>
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-section">Archetypes</div>
+    <div id="navList"></div>
+    <div class="sidebar-footer">
+      <button class="pill pill-amber" onclick="showDaily()">☀️ Today's pick</button>
+      <button class="pill pill-accent" onclick="showOverview()">📊 Overview</button>
+    </div>
+  </nav>
+
+  <!-- Main -->
+  <main class="main">
+    <div class="topbar">
+      <h2 id="mainTitle">Overview</h2>
+      <span id="mainBadge"></span>
+    </div>
+    <div class="content" id="mainContent"></div>
+  </main>
+</div>
+
+<!-- API key setup modal -->
+<div class="setup-overlay" id="setupOverlay" style="display:none">
+  <div class="setup-box">
+    <div class="setup-title">🤖 Set up the AI tutor</div>
+    <div class="setup-sub">
+      The AI tutor needs an Anthropic API key to work. You can get one free at
+      <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+      — new accounts get a small free credit. The key is saved only in this browser.
+    </div>
+    <div class="setup-label">Your API key</div>
+    <input class="setup-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." autocomplete="off">
+    <div class="setup-hint">
+      Your key is stored in <strong>localStorage</strong> on this device only — it never leaves your browser except to call the Anthropic API directly.
+      Typical cost: a few pence per study session.
+      <br><a href="https://console.anthropic.com/settings/keys" target="_blank">Get or manage your key →</a>
+    </div>
+    <div class="setup-actions">
+      <button class="setup-skip" onclick="hideSetup()">Skip for now</button>
+      <button class="btn btn-accent" onclick="saveKey()">Save key</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─────────────────────────────────────────────
+// DATA
+// ─────────────────────────────────────────────
+const PMT = "https://www.physicsandmathstutor.com/maths-revision/";
+const CORBETT = "https://corbettmaths.com/";
+const MG = "https://www.mathsgenie.co.uk/";
+
+const ARCHETYPES = [
+  { id:0, topic:"Algebra", name:"Simultaneous equations in disguise",
+    summary:"Word problems hiding two unknowns behind prose — the key step is translating language into two equations before any algebra.",
+    intuition:"When you see two unknown quantities and two facts about them, it's simultaneous equations. Define variables first, write both equations, then solve by elimination or substitution.",
+    steps:[
+      "Read the whole question and identify the two unknown quantities. Name them clearly (e.g. x = adult ticket price, y = child ticket price).",
+      "Extract two separate equations from the words — one equation per fact given.",
+      "Solve by elimination: multiply one equation so a term cancels when you add or subtract.",
+      "Substitute back to find the second unknown. Check both values satisfy the original equations.",
+      "Answer the actual question — often something derived from x and y, not just x and y themselves."
+    ],
+    example:"Adult and child tickets are sold. 3 adults and 2 children cost £29. 1 adult and 4 children cost £23. Find the cost of each type of ticket.",
+    links:[
+      { label:"PMT: Simultaneous equations (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-simultaneous-equations-videos/" },
+      { label:"Corbettmaths", url:CORBETT+"2013/02/12/simultaneous-equations/" }
+    ]},
+  { id:1, topic:"Number", name:"Reverse percentage & compound interest",
+    summary:"Working backwards from a result, or applying repeated percentage change — the trap is applying the percentage to the wrong base.",
+    intuition:"For reverse %: divide by the multiplier (1 + Y/100), never subtract Y%. For compound interest: raise the multiplier to the power of the number of years, don't add simple interest.",
+    steps:[
+      "Identify: is the given value the start or the end of the percentage change?",
+      "Write the multiplier: a 30% increase → ×1.3; a 15% decrease → ×0.85.",
+      "For reverse percentage: divide the given value by the multiplier.",
+      "For compound interest: raise the multiplier to the power of the number of years.",
+      "Round sensibly and re-read what the question actually asks for — don't calculate more than needed."
+    ],
+    example:"After a 12% pay rise, Sam earns £29,120. What was his salary before the rise?",
+    links:[
+      { label:"PMT: Percentages (H)", url:PMT+"gcse-number/questions-edexcel/higher-percentages-videos/" },
+      { label:"Mathsgenie: Compound interest", url:MG+"compoundinterest.html" }
+    ]},
+  { id:2, topic:"Geometry", name:"Circle theorems combined",
+    summary:"Questions requiring two or more circle theorems in sequence — the difficulty is seeing which theorem applies first.",
+    intuition:"Label every known angle on the diagram. Apply the most obvious theorem first to find an intermediate angle, then use that result for the next step. Always state the theorem name as your reason.",
+    steps:[
+      "Copy the diagram and mark all given angles clearly.",
+      "Identify key features: tangent, diameter, angles in same segment, cyclic quadrilateral?",
+      "Apply the first theorem and find an intermediate angle. Write the reason explicitly.",
+      "Use the new angle to apply a second theorem if needed.",
+      "State the final answer with its reasoning — method marks are awarded for stated reasons."
+    ],
+    example:"O is the centre of a circle. A, B and C lie on the circumference. Angle AOB = 132°. Find angle ACB, giving a reason for each step.",
+    links:[
+      { label:"PMT: Circle theorems (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-circle-theorems-videos/" },
+      { label:"Corbettmaths", url:CORBETT+"2013/02/18/circle-theorems/" }
+    ]},
+  { id:3, topic:"Geometry", name:"Similar shapes & scale factor traps",
+    summary:"The area scale factor is the square of the length scale factor; volume is the cube. Confusing these is the most common error.",
+    intuition:"Find the linear scale factor k first by comparing matching sides. Then square it for area, cube it for volume. Never apply the area ratio to a length or the length ratio to a volume.",
+    steps:[
+      "Identify the two similar shapes and label corresponding sides.",
+      "Calculate the linear scale factor: k = (side in large shape) ÷ (corresponding side in small shape).",
+      "For area comparisons: multiply or divide by k².",
+      "For volume comparisons: multiply or divide by k³.",
+      "Re-read the question — check whether it asks for area, volume, or a length, and use the right scale factor."
+    ],
+    example:"Two similar cones have heights 6 cm and 10 cm. The volume of the small cone is 48π cm³. Find the volume of the large cone.",
+    links:[
+      { label:"PMT: Similarity (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-similar-shapes-videos/" },
+      { label:"Mathsgenie", url:MG+"similarshapes.html" }
+    ]},
+  { id:4, topic:"Trigonometry", name:"Trigonometry & Pythagoras in 3D",
+    summary:"Finding angles or lengths in 3D shapes by identifying a hidden right-angled triangle in a 2D cross-section.",
+    intuition:"You can't apply trig in 3D directly. Sketch the shape, spot the right-angled triangle that contains the angle or length you need, and reduce it to a 2D problem you already know how to solve.",
+    steps:[
+      "Draw a clear 3D sketch and label all given lengths on it.",
+      "Identify the exact line or angle you need to find.",
+      "Find the right-angled triangle that contains that line or angle — you may need to draw it separately.",
+      "If the triangle's sides aren't all known, use Pythagoras first to find an intermediate length.",
+      "Apply sin, cos, or tan (or Pythagoras again) to your 2D triangle. Check the answer is reasonable."
+    ],
+    example:"A cuboid has length 8 cm, width 6 cm and height 5 cm. Find the angle that the space diagonal makes with the base, to 1 d.p.",
+    links:[
+      { label:"PMT: Pythagoras theorem (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-pythagoras-theorem-videos/" },
+      { label:"PMT: Trigonometry (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-trigonometry-videos/" }
+    ]},
+  { id:5, topic:"Algebra", name:"Quadratic in context",
+    summary:"Setting up a quadratic from a word problem, solving it, then selecting only the root that makes physical sense.",
+    intuition:"Form the quadratic carefully from the given information. After solving, always reject any root that is physically impossible (negative length, negative time) and re-read what's actually being asked.",
+    steps:[
+      "Define a variable and express all relevant lengths or quantities in terms of it.",
+      "Form an equation using the given constraint — often an area or perimeter relationship.",
+      "Expand and rearrange to get ax² + bx + c = 0.",
+      "Solve by factorising, completing the square, or the quadratic formula.",
+      "Reject any root that doesn't make sense in context. Write the answer with units."
+    ],
+    example:"A rectangle has length (x + 3) cm and width (x − 1) cm. Its area is 45 cm². Find the value of x.",
+    links:[
+      { label:"PMT: Quadratic equations (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-solving-quadratic-equations-videos/" },
+      { label:"PMT: Deriving expressions (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-deriving-expressions-videos/" }
+    ]},
+  { id:6, topic:"Algebra", name:"Algebraic proof",
+    summary:"Proving a statement is always true using algebra — not numerical examples. The structure of the proof matters as much as the algebra.",
+    intuition:"Use n, n+1, n+2 for consecutive integers — never pick actual numbers. Expand and simplify algebraically, then show the result has the required property (divisible by 6, always positive, etc.).",
+    steps:[
+      "Write out clearly what you need to prove before doing any algebra.",
+      "Choose your representations: consecutive integers → n, n+1, n+2; even number → 2n; odd number → 2n+1.",
+      "Expand and simplify the algebraic expression fully, showing each step.",
+      "Show the result has the required property — e.g. to show divisible by 6, factor out 6.",
+      "Write a clear conclusion: 'Therefore [statement] is always true for all integer values of n.'"
+    ],
+    example:"Prove that the product of two consecutive odd numbers is always odd.",
+    links:[
+      { label:"PMT: Algebraic proof (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-algebraic-proof-videos/" },
+      { label:"Corbettmaths", url:CORBETT+"2018/11/20/algebraic-proof/" }
+    ]},
+  { id:7, topic:"Geometry", name:"Vectors",
+    summary:"Expressing paths as combinations of given vectors, and using vector arithmetic to prove geometric properties.",
+    intuition:"Pick a route from start to finish using only the vectors you know — you can go via any intermediate point. Going against an arrow means negate the vector. Midpoints halve the vector.",
+    steps:[
+      "Label the diagram with all given vectors clearly, paying attention to arrow directions.",
+      "Choose a route from start to finish using known vectors, going via intermediate points if needed.",
+      "Write the vector journey step by step: e.g. →AC = →AB + →BC.",
+      "Simplify by collecting scalar multiples of each base vector.",
+      "To prove lines are parallel: show one vector is a scalar multiple of the other."
+    ],
+    example:"OABC is a parallelogram. OA = a, OC = c. M is the midpoint of AB. Express OM in terms of a and c.",
+    links:[
+      { label:"PMT: Manipulating vectors (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-manipulating-vectors-videos/" },
+      { label:"PMT: Vector proof (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-vector-proof-videos/" }
+    ]},
+  { id:8, topic:"Statistics", name:"Probability trees (without replacement)",
+    summary:"Multi-stage probability where earlier outcomes change the probabilities of later ones.",
+    intuition:"Always update the denominator after the first event when drawing without replacement. Multiply along branches (AND), add between branches (OR). All end-branch probabilities must sum to 1 — use this to check your tree.",
+    steps:[
+      "Draw the tree with all stages. Label each branch with its probability as a fraction.",
+      "For 'without replacement': reduce the denominator by 1 for stage 2, and reduce the matching numerator by 1 if the same type was picked first.",
+      "Multiply along branches: P(A then B) = P(A) × P(B|A).",
+      "To find P(A or B), identify all branches that give the desired outcome and add their end-probabilities.",
+      "Check your work: all end-branch probabilities should sum to exactly 1."
+    ],
+    example:"A bag contains 4 red and 3 blue balls. Two balls are drawn without replacement. Find the probability of getting one ball of each colour.",
+    links:[
+      { label:"PMT: Probability (H)", url:PMT+"gcse-statistics/questions-edexcel/higher-probability-videos/" },
+      { label:"Corbettmaths: Tree diagrams", url:CORBETT+"2013/04/09/probability-tree-diagrams/" }
+    ]},
+  { id:9, topic:"Algebra", name:"Graph interpretation (gradient & area)",
+    summary:"Reading physical meaning from gradients and areas under graphs — particularly velocity-time and distance-time graphs.",
+    intuition:"Gradient = the rate at which y changes with respect to x. On a velocity-time graph: gradient = acceleration, area underneath = distance. Split irregular shapes into triangles and rectangles to find the area.",
+    steps:[
+      "Identify what the axes represent. State in words what the gradient means in this context.",
+      "For a straight section, calculate the gradient: (y₂ − y₁) ÷ (x₂ − x₁).",
+      "For a curved section: draw a tangent line at the relevant point and find that tangent's gradient.",
+      "For area: split the region into triangles and rectangles. Use ½ × base × height for triangles.",
+      "Give the final answer with correct units — area under a v-t graph has units of m/s × s = m."
+    ],
+    example:"A velocity-time graph shows a car accelerating uniformly from rest to 20 m/s in 8 seconds, then travelling at constant speed for 5 seconds. Find the total distance travelled.",
+    links:[
+      { label:"PMT: Travel graphs (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-distance-time-and-travel-graphs-videos/" },
+      { label:"Mathsgenie: Velocity-time graphs", url:MG+"velocity-time-graphs.html" }
+    ]},
+  { id:10, topic:"Number", name:"Ratio & proportion chains",
+    summary:"Multi-step problems where a ratio links quantities — often with a change applied midway that forces a recalculation.",
+    intuition:"Find the unit value first by dividing the total by the sum of ratio parts, then scale. If the ratio changes partway through, recalculate completely from the new state.",
+    steps:[
+      "Identify what the ratio is between and establish what the total or one known part equals.",
+      "Find the value of one 'share': divide the total by the sum of all ratio parts.",
+      "Multiply by each group's number of shares to find their individual amounts.",
+      "If there's a second stage (e.g. one person gives some away), recalculate from the new totals.",
+      "Check your answer by summing all final parts — they should equal the overall total."
+    ],
+    example:"Ali, Beth and Cara share £720 in the ratio 3:4:5. Beth then gives half her share to Ali. How much does Ali now have?",
+    links:[
+      { label:"PMT: Ratio (H)", url:PMT+"gcse-number/questions-edexcel/higher-ratio-videos/" },
+      { label:"Corbettmaths", url:CORBETT+"2013/12/21/ratio-practice-questions/" }
+    ]},
+  { id:11, topic:"Algebra", name:"Algebraic fractions & equation solving",
+    summary:"Combining algebraic fractions, often leading to a quadratic — the most common trap is forgetting to multiply every single term by the LCD.",
+    intuition:"Treat algebraic fractions exactly like numerical fractions. Find the lowest common denominator, rewrite every fraction using it, then multiply the whole equation through to clear all denominators. Expand carefully.",
+    steps:[
+      "Identify the lowest common denominator (LCD) of all denominators — often a product of two brackets.",
+      "Multiply every term in the equation by the LCD, including any whole-number terms.",
+      "Cancel the denominators and expand the numerators carefully, watching signs.",
+      "Collect terms and rearrange into the form ax² + bx + c = 0.",
+      "Solve by factorising or the quadratic formula, then check each solution doesn't make any original denominator equal to zero."
+    ],
+    example:"Solve: 3/(x − 1) + 2/(x + 2) = 1. Show all your working.",
+    links:[
+      { label:"PMT: Algebraic fractions (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-algebraic-fractions-videos/" },
+      { label:"Mathsgenie", url:MG+"algebraicfractions.html" }
+    ]},
+  { id:12, topic:"Geometry", name:"Geometric reasoning with algebra",
+    summary:"Finding angles or lengths expressed as algebraic expressions, then using a geometric rule to form and solve an equation.",
+    intuition:"The geometric rule gives you the equation for free — write down the algebraic expressions, apply the rule (angles in triangle = 180°, co-interior angles = 180°, etc.), form the equation, and solve.",
+    steps:[
+      "Write down the algebraic expressions for all relevant angles or sides on the diagram.",
+      "Identify the geometric rule that connects them.",
+      "Form an equation by substituting the expressions into the rule.",
+      "Solve the equation for the unknown.",
+      "Substitute back to find the actual angle or length values and verify they satisfy the geometric rule."
+    ],
+    example:"A triangle has angles (2x + 10)°, (3x − 5)° and (x + 15)°. Find the value of x and the size of each angle.",
+    links:[
+      { label:"PMT: Angles (H)", url:PMT+"gcse-geometry-and-measures/questions-edexcel/higher-angles-videos/" },
+      { label:"Corbettmaths", url:CORBETT+"2013/02/12/angles-exam-questions/" }
+    ]},
+  { id:13, topic:"Number", name:"Speed / density multi-step chains",
+    summary:"Problems needing two or more formula applications — often combining speed/distance/time with a unit conversion or second calculation stage.",
+    intuition:"Write the formula for each step before plugging in numbers. Convert all units first. Remember: average speed = total distance ÷ total time — never average the speeds themselves.",
+    steps:[
+      "Write the formula you'll need for each stage: Speed = D/T or Density = M/V.",
+      "Convert all units to be consistent before any calculation.",
+      "Calculate the required quantity for each stage separately.",
+      "Combine results as appropriate — e.g. total time = time for stage 1 + time for stage 2.",
+      "Convert the final answer back to the units the question requests."
+    ],
+    example:"A car travels 60 km at 40 km/h, then a further 90 km at 60 km/h. Find the average speed for the whole journey.",
+    links:[
+      { label:"PMT: Speed, distance, time (H)", url:PMT+"gcse-number/questions-edexcel/higher-speed-distance-time-videos/" },
+      { label:"Mathsgenie", url:MG+"speed-distance-time.html" }
+    ]},
+  { id:14, topic:"Algebra", name:"Function transformations on graphs",
+    summary:"Recognising how f(x+a), f(x)+a, f(−x) and −f(x) each transform a graph, including for unfamiliar functions.",
+    intuition:"f(x + a) shifts left by a (counterintuitive — inside the brackets works backwards). f(x) + a shifts up. f(−x) reflects in the y-axis. −f(x) reflects in the x-axis. Track 2–3 key points to sketch the result.",
+    steps:[
+      "Identify the transformation type from the function notation — inside the brackets affects x (left/right), outside affects y (up/down/reflect).",
+      "Pick 3 key points on the original graph: x-intercepts, y-intercept, turning point.",
+      "Apply the transformation rule to each point's coordinates.",
+      "Plot the new key points and sketch the transformed curve, keeping the same overall shape.",
+      "Check: does the curve still look right? Reflections flip the shape; translations shift it without changing it."
+    ],
+    example:"The graph of y = f(x) passes through (0, 3), (2, 0) and (5, −1). Sketch y = f(x − 2) + 3, marking the new positions of these points.",
+    links:[
+      { label:"PMT: Graph transformations (H)", url:PMT+"gcse-algebra/questions-edexcel/higher-transformation-of-functions-videos/" },
+      { label:"Desmos (interactive)", url:"https://www.desmos.com/calculator" }
+    ]}
+];
+
+const SAMPLE_QS = {
+  0:[
+    { year:"2019 Paper 2H", marks:4, q:"Jane buys 3 adult tickets and 1 child ticket for £38. Paul buys 1 adult ticket and 3 child tickets for £34. Find the cost of an adult ticket and the cost of a child ticket." },
+    { year:"2018 Paper 3H", marks:5, q:"The sum of 4 times a number and 3 times another number is 42. The difference between the two numbers is 3. Find both numbers." },
+    { year:"2020 Paper 2H", marks:4, q:"A cinema sells standard and premium seats. 2 standard and 5 premium seats cost £64. 4 standard and 3 premium seats cost £56. Find the cost of each type of seat." }
+  ],
+  1:[
+    { year:"2019 Paper 1H", marks:4, q:"A car was bought for £12,000. It depreciates at 15% per year. What is its value after 3 years? Give your answer to the nearest pound." },
+    { year:"2018 Paper 2H", marks:4, q:"After a 20% reduction in a sale, a jacket costs £72. What was the original price of the jacket?" },
+    { year:"2021 Paper 3H", marks:5, q:"£5,000 is invested at 3.5% compound interest per year. How many complete years will it take for the investment to exceed £6,000? Show your working." }
+  ],
+  2:[
+    { year:"2019 Paper 1H", marks:4, q:"A, B and C are points on the circumference of a circle with centre O. Angle AOC = 130°. Find angle ABC. Give a reason for each step of your working." },
+    { year:"2020 Paper 2H", marks:5, q:"A, B, C and D are points on a circle. ABE is a straight line. Angle DAB = 105°. Angle CBE = 40°. Find angle ACD, giving reasons for each step." },
+    { year:"2022 Paper 1H", marks:4, q:"PQ is a tangent to a circle at Q. O is the centre. Angle QPO = 28°. R is a point on the circle. Find angle QOR. Give reasons for each step of your working." }
+  ],
+  3:[
+    { year:"2018 Paper 3H", marks:4, q:"Two mathematically similar vases have heights 20 cm and 30 cm. The surface area of the smaller vase is 500 cm². Find the surface area of the larger vase." },
+    { year:"2021 Paper 2H", marks:5, q:"Two similar cylinders A and B have heights in the ratio 2:3. The volume of cylinder A is 80 cm³. Find the volume of cylinder B." },
+    { year:"2019 Paper 3H", marks:4, q:"The lengths of corresponding sides of two similar triangles are in the ratio 3:5. The area of the smaller triangle is 27 cm². Find the area of the larger triangle." }
+  ],
+  4:[
+    { year:"2018 Paper 1H", marks:5, q:"A pyramid has a square base of side 8 cm. The apex is directly above the centre at height 6 cm. Find the angle that a slant edge makes with the base, to 1 d.p." },
+    { year:"2020 Paper 1H", marks:4, q:"A cuboid has a square base of side 5 cm and height 12 cm. Find the angle between the space diagonal and the base. Give your answer to 1 decimal place." },
+    { year:"2022 Paper 1H", marks:5, q:"A right-angled triangular prism has a triangular face with legs 6 cm and 8 cm. The prism is 15 cm long. Find the angle between the longest diagonal of the prism and the base." }
+  ],
+  5:[
+    { year:"2019 Paper 2H", marks:5, q:"A rectangle has length (2x + 1) cm and width (x − 2) cm. Its area is 20 cm². Show that 2x² − 3x − 22 = 0, then find x to 2 d.p." },
+    { year:"2021 Paper 3H", marks:4, q:"The product of two consecutive positive integers is 182. Form a quadratic equation and use it to find the two integers." },
+    { year:"2020 Paper 1H", marks:5, q:"A right-angled triangle has shorter sides x cm and (x + 2) cm. The hypotenuse is 10 cm. Find the value of x, showing all your working." }
+  ],
+  6:[
+    { year:"2019 Paper 1H", marks:4, q:"Prove that the sum of any three consecutive even numbers is always divisible by 6." },
+    { year:"2020 Paper 1H", marks:4, q:"n is a positive integer. Prove that (2n + 1)² − (2n − 1)² is always a multiple of 8." },
+    { year:"2022 Paper 1H", marks:5, q:"Prove that (n + 3)² − (n − 3)² is always a multiple of 12 for all positive integer values of n." }
+  ],
+  7:[
+    { year:"2019 Paper 1H", marks:5, q:"OAB is a triangle. M is the midpoint of OA. N is the midpoint of OB. OA = 2a, OB = 2b. Prove that MN is parallel to AB and half its length." },
+    { year:"2021 Paper 1H", marks:5, q:"OABC is a parallelogram. OA = a, OC = c. P divides AB in the ratio 1:2. Find vector OP in terms of a and c." },
+    { year:"2018 Paper 1H", marks:4, q:"OA = a, OB = b. M is the midpoint of AB. X is the point on OM such that OX:XM = 2:1. Express OX in terms of a and b." }
+  ],
+  8:[
+    { year:"2020 Paper 2H", marks:4, q:"A bag contains 5 red counters and 3 blue counters. Two counters are taken at random without replacement. Find the probability that both counters are the same colour." },
+    { year:"2019 Paper 3H", marks:5, q:"A bag has 10 balls: 6 yellow and 4 green. Three balls are drawn without replacement. Find the probability of getting exactly two yellow balls." },
+    { year:"2022 Paper 2H", marks:4, q:"A box has 8 cards: 3 red, 3 blue and 2 green. Two cards are drawn without replacement. Find the probability that the two cards are different colours." }
+  ],
+  9:[
+    { year:"2019 Paper 3H", marks:4, q:"A v-t graph shows a train accelerating from rest to 30 m/s in 20 s, then at constant speed for 40 s, then decelerating to rest in 10 s. Find the total distance travelled." },
+    { year:"2021 Paper 2H", marks:5, q:"A particle's velocity v m/s at time t seconds is shown on a graph as a straight line from (0, 4) to (8, 20). Find the distance travelled and the acceleration of the particle." },
+    { year:"2018 Paper 3H", marks:4, q:"A speed-time graph forms a trapezium with parallel sides of 12 s and 20 s and height 15 m/s. Calculate the total distance travelled." }
+  ],
+  10:[
+    { year:"2019 Paper 2H", marks:4, q:"Amir, Beth and Cara share £960 in the ratio 5:3:4. Amir gives 20% of his share to Beth. How much does Beth now have?" },
+    { year:"2020 Paper 2H", marks:4, q:"Gold and silver are mixed in the ratio 3:1 by weight. Density of gold: 19.3 g/cm³. Density of silver: 10.5 g/cm³. Find the density of the mixture to 3 s.f." },
+    { year:"2021 Paper 3H", marks:5, q:"Paint is mixed in the ratio red:white:blue = 2:5:3. Sam has 800 ml of red, 2 litres of white and 1 litre of blue. What is the maximum total amount of paint Sam can make?" }
+  ],
+  11:[
+    { year:"2019 Paper 1H", marks:4, q:"Solve: (x+1)/(x−2) + (x−1)/(x+2) = 3. Show all your working." },
+    { year:"2021 Paper 1H", marks:5, q:"Show that 2/(x+1) − 1/(x−1) = 1 simplifies to x² − 2x − 2 = 0. Hence solve for x, giving your answers to 2 decimal places." },
+    { year:"2018 Paper 1H", marks:4, q:"Solve: 5/(x+2) + 3/(x−1) = 2. Give your solutions to 2 decimal places." }
+  ],
+  12:[
+    { year:"2019 Paper 2H", marks:4, q:"The angles of a quadrilateral are x°, (2x−10)°, (x+30)° and (3x+20)°. Find x and show that one angle is a right angle." },
+    { year:"2020 Paper 1H", marks:4, q:"Two parallel lines are cut by a transversal. Co-interior angles are (3x+20)° and (2x+40)°. Find x and calculate each angle." },
+    { year:"2022 Paper 2H", marks:5, q:"Triangle ABC is isosceles with AB = AC. Angle BAC = (2x)° and angle ABC = (3x−10)°. Find x and hence find each angle of the triangle." }
+  ],
+  13:[
+    { year:"2018 Paper 2H", marks:4, q:"A car travels 120 km at 80 km/h then 80 km at 40 km/h. Find the average speed for the whole journey." },
+    { year:"2020 Paper 3H", marks:5, q:"A metal object (volume 200 cm³, mass 1,540 g) is made of copper (density 8.9 g/cm³) and zinc (density 7.1 g/cm³). Find the volume of copper in the object." },
+    { year:"2021 Paper 2H", marks:4, q:"A cyclist rides at 15 km/h for 2 hours then at 20 km/h for 90 minutes. Find the total distance and the average speed for the whole journey." }
+  ],
+  14:[
+    { year:"2019 Paper 1H", marks:4, q:"The graph y = f(x) passes through (0, 3), (2, 0) and (4, −1). Sketch y = f(x+2) − 1, marking the new positions of these three points." },
+    { year:"2021 Paper 1H", marks:4, q:"The graph y = f(x) has a maximum at (3, 5). Write down the coordinates of the maximum of y = f(−x) + 2. Describe fully the transformation that maps y = f(x) to y = f(−x) + 2." },
+    { year:"2020 Paper 1H", marks:5, q:"Given f(x) = x² − 4, sketch on the same axes: y = f(x), y = f(x−2) and y = −f(x). Mark all x-intercepts and y-intercepts." }
+  ]
+};
+
+const TOPIC_CSS = {
+  "Algebra":      "background:#EEF2FF;color:#4338CA",
+  "Geometry":     "background:#e0fdf4;color:#0f766e",
+  "Number":       "background:#fffbeb;color:#b45309",
+  "Statistics":   "background:#f5f3ff;color:#7c3aed",
+  "Trigonometry": "background:#fce7f3;color:#be185d"
+};
+
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let conf      = {};
+let tutorMsgs = {};   // { archetypeId: [{role, content}] }
+let panelOpen = {};   // { 'tutor_N': bool, 'qfetch_N': bool }
+let qIdx      = {};   // { archetypeId: number }
+let currentView = 'overview';
+
+function load() {
+  try { conf      = JSON.parse(localStorage.getItem('gcse_conf')      || '{}'); } catch(e){}
+  try { tutorMsgs = JSON.parse(localStorage.getItem('gcse_tutor')     || '{}'); } catch(e){}
+  try { qIdx      = JSON.parse(localStorage.getItem('gcse_qidx')      || '{}'); } catch(e){}
+}
+function saveConf()  { try { localStorage.setItem('gcse_conf',  JSON.stringify(conf));      } catch(e){} }
+function saveMsgs()  { try { localStorage.setItem('gcse_tutor', JSON.stringify(tutorMsgs)); } catch(e){} }
+function saveQIdx()  { try { localStorage.setItem('gcse_qidx',  JSON.stringify(qIdx));      } catch(e){} }
+
+// ─────────────────────────────────────────────
+// API KEY
+// ─────────────────────────────────────────────
+function getKey()    { return localStorage.getItem('gcse_apikey') || ''; }
+function saveKey()   {
+  const k = document.getElementById('apiKeyInput').value.trim();
+  if (!k) { alert('Please enter a key.'); return; }
+  localStorage.setItem('gcse_apikey', k);
+  hideSetup();
+  updateKeyStatus();
+}
+function showSetup() {
+  document.getElementById('apiKeyInput').value = getKey();
+  document.getElementById('setupOverlay').style.display = 'flex';
+}
+function hideSetup() { document.getElementById('setupOverlay').style.display = 'none'; }
+function updateKeyStatus() {
+  const has = !!getKey();
+  document.getElementById('keyDot').className   = 'key-dot' + (has ? ' active' : '');
+  document.getElementById('keyLabel').textContent = has ? 'AI tutor ready' : 'No API key';
+}
+
+// ─────────────────────────────────────────────
+// DAILY PICK
+// ─────────────────────────────────────────────
+function getDailyId() {
+  const dayNum = Math.floor(Date.now() / 86400000);
+  return dayNum % ARCHETYPES.length;
+}
+
+// ─────────────────────────────────────────────
+// CONFIDENCE HELPERS
+// ─────────────────────────────────────────────
+function confColor(c) {
+  if (c === 'got-it')  return 'var(--green)';
+  if (c === 'working') return 'var(--amber)';
+  if (c === 'stuck')   return 'var(--red)';
+  return 'var(--border)';
+}
+function confShort(c) {
+  if (c === 'got-it')  return '✓';
+  if (c === 'working') return '~';
+  if (c === 'stuck')   return '✗';
+  return '–';
+}
+
+// ─────────────────────────────────────────────
+// NAV
+// ─────────────────────────────────────────────
+function buildNav() {
+  const nl = document.getElementById('navList');
+  nl.innerHTML = '';
+  ARCHETYPES.forEach(a => {
+    const c   = conf[a.id];
+    const col = confColor(c);
+    const isToday = a.id === getDailyId();
+    const el  = document.createElement('div');
+    el.className = 'nav-item' + (currentView === a.id ? ' active' : '');
+    el.dataset.id = a.id;
+    el.innerHTML = `
+      <span class="nav-dot" style="background:${col}"></span>
+      <span class="nav-label">${isToday ? '☀️ ' : ''}${a.name}</span>
+      <span class="nav-cf" style="color:${col}">${confShort(c)}</span>`;
+    el.onclick = () => showArchetype(a.id);
+    nl.appendChild(el);
+  });
+}
+function setActive(id) {
+  document.querySelectorAll('.nav-item').forEach(el =>
+    el.classList.toggle('active', String(el.dataset.id) === String(id))
+  );
+}
+
+// ─────────────────────────────────────────────
+// OVERVIEW
+// ─────────────────────────────────────────────
+function showOverview() {
+  currentView = 'overview';
+  setActive(-1);
+  document.getElementById('mainTitle').textContent = 'Progress overview';
+  document.getElementById('mainBadge').textContent = '';
+
+  const done   = Object.keys(conf).length;
+  const got    = Object.values(conf).filter(v => v === 'got-it').length;
+  const stuck  = Object.values(conf).filter(v => v === 'stuck').length;
+  const daily  = ARCHETYPES[getDailyId()];
+  const nextStuck = ARCHETYPES.find(a => conf[a.id] === 'stuck');
+  const nextNew   = ARCHETYPES.find(a => !conf[a.id]);
+  const next = nextStuck || nextNew;
+
+  let h = `
+  <div class="daily-wrap">
+    <div class="daily-eyebrow">☀️ Today's pick</div>
+    <div class="daily-title">${daily.name}</div>
+    <div class="daily-sub">Each day a fresh archetype is highlighted. Work through the method, try the sample questions, and mark your confidence before you finish.</div>
+    <button class="btn btn-amber" onclick="showArchetype(${daily.id})">Open today's archetype →</button>
+  </div>
+
+  <div class="overview-grid">
+    <div class="ov-card"><div class="ov-num">${done}/15</div><div class="ov-lbl">Started</div></div>
+    <div class="ov-card"><div class="ov-num" style="color:var(--green)">${got}</div><div class="ov-lbl">Got it</div></div>
+    <div class="ov-card"><div class="ov-num" style="color:var(--red)">${stuck}</div><div class="ov-lbl">Still stuck</div></div>
+  </div>`;
+
+  if (next && next.id !== daily.id) {
+    h += `
+    <div class="next-card">
+      <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">
+        ${nextStuck ? 'Revisit — marked stuck' : 'Also suggested'}
+      </div>
+      <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px">${next.name}</div>
+      <button class="btn btn-accent" onclick="showArchetype(${next.id})">Open →</button>
+    </div>`;
+  }
+
+  h += `<div class="card-label" style="margin-bottom:8px">All archetypes</div><div class="prog-list">`;
+  ARCHETYPES.forEach(a => {
+    const c   = conf[a.id];
+    const col = c === 'got-it' ? 'var(--green)' : c === 'working' ? 'var(--amber)' : c === 'stuck' ? 'var(--red)' : 'var(--border)';
+    const w   = c === 'got-it' ? 100 : c === 'working' ? 50 : c === 'stuck' ? 15 : 0;
+    h += `<div class="prog-row">
+      <span class="prog-name" onclick="showArchetype(${a.id})">${a.name}</span>
+      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${w}%;background:${col}"></div></div>
+      <span class="prog-st">${confShort(c)}</span>
+    </div>`;
+  });
+  h += `</div>`;
+  document.getElementById('mainContent').innerHTML = h;
+}
+
+function showDaily() { showArchetype(getDailyId()); }
+
+// ─────────────────────────────────────────────
+// ARCHETYPE PAGE
+// ─────────────────────────────────────────────
+function showArchetype(id) {
+  currentView = id;
+  setActive(id);
+  const a       = ARCHETYPES[id];
+  const c       = conf[id];
+  const isToday = id === getDailyId();
+  const qs      = SAMPLE_QS[id] || [];
+  const qi      = qIdx[id] || 0;
+  const q       = qs[qi];
+
+  document.getElementById('mainTitle').textContent = a.name;
+  const badge = document.getElementById('mainBadge');
+  badge.style.cssText = `font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;${TOPIC_CSS[a.topic]||''}`;
+  badge.textContent   = (isToday ? '☀️ Today · ' : '') + a.topic;
+
+  const stepsH = a.steps.map((s, i) =>
+    `<div class="step"><span class="step-num">${i+1}</span><span>${s}</span></div>`
+  ).join('');
+
+  const linksH = a.links.map(l =>
+    `<a class="ext-link" href="${l.url}" target="_blank" rel="noopener">${l.label} ↗</a>`
+  ).join('');
+
+  const cbtns = [
+    { val:'got-it',  label:'✓ Got it',        sel:'sel-g' },
+    { val:'working', label:'~ Working on it', sel:'sel-a' },
+    { val:'stuck',   label:'✗ Still stuck',   sel:'sel-r' }
+  ].map(b =>
+    `<button class="conf-btn${c === b.val ? ' '+b.sel : ''}" onclick="setConf(${id},'${b.val}')">${b.label}</button>`
+  ).join('');
+
+  // Question fetcher HTML
+  const qfetchKey = 'qfetch_' + id;
+  const qfOpen    = !!panelOpen[qfetchKey];
+  let qfetchInner = '';
+  if (q) {
+    qfetchInner = `
+      <div class="q-item">
+        <div class="q-item-meta">${q.year}</div>
+        <div class="q-item-marks">${q.marks} marks</div>
+        <div class="q-item-text">${q.q}</div>
+        <div class="q-nav">
+          <button class="btn btn-teal" onclick="changeQ(${id},-1)" ${qi === 0 ? 'disabled' : ''}>← Prev</button>
+          <button class="btn btn-teal" onclick="changeQ(${id},1)" ${qi >= qs.length-1 ? 'disabled' : ''}>Next →</button>
+          <span class="q-counter">${qi+1} of ${qs.length}</span>
+        </div>
+      </div>
+      <div class="tip" style="margin-top:4px">Attempt this on paper before checking the mark scheme via the PMT links below.</div>`;
+  } else {
+    qfetchInner = `<p style="font-size:12px;color:var(--ink3)">No sample questions loaded for this archetype yet.</p>`;
+  }
+
+  // Tutor HTML
+  const tutorKey  = 'tutor_' + id;
+  const tOpen     = !!panelOpen[tutorKey];
+  const msgs      = tutorMsgs[id] || [];
+  const msgsHTML  = msgs.length
+    ? msgs.map(m => `<div class="msg msg-${m.role === 'user' ? 'user' : 'ai'}">${escHtml(m.content)}</div>`).join('')
+    : '<div style="font-size:12px;color:var(--ink3);padding:2px 0">Use the quick buttons or type a question below.</div>';
+
+  const hasKey = !!getKey();
+  const tutorWarning = !hasKey
+    ? `<div class="tip" style="margin-bottom:8px">⚠️ No API key set — <button onclick="showSetup()" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:12px;padding:0">add one</button> to enable the AI tutor.</div>`
+    : '';
+
+  document.getElementById('mainContent').innerHTML = `
+  <div class="card">
+    <div class="card-label">Why it's hard</div>
+    <div class="card-body">${a.summary}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">The key intuition</div>
+    <div class="card-body" style="font-style:italic;color:var(--accent)">${a.intuition}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">How to crack it — step by step</div>
+    <div class="steps">${stepsH}</div>
+  </div>
+
+  <div class="panel-wrap">
+    <div class="panel-header panel-header-accent${tOpen?' open':''}" onclick="togglePanel('${tutorKey}',${id})">
+      <span style="font-size:15px">🤖</span>
+      <span class="panel-title panel-title-accent">Ask the AI tutor about this method</span>
+      <span class="panel-chevron${tOpen?' open':''}">▼</span>
+    </div>
+    <div class="panel-body${tOpen?' open':''}" id="panelBody_${tutorKey}">
+      ${tutorWarning}
+      <div class="tutor-quick">
+        <span class="tutor-q" onclick="quickAsk(${id},'Can you explain step 1 in simpler terms with a concrete example?')">Explain step 1</span>
+        <span class="tutor-q" onclick="quickAsk(${id},'Can you give me a fully worked example of this type of question, showing every step?')">Worked example</span>
+        <span class="tutor-q" onclick="quickAsk(${id},'What are the most common mistakes students make on this type of question?')">Common mistakes</span>
+        <span class="tutor-q" onclick="quickAsk(${id},'How do I recognise this question type in an exam — what are the clues to look for?')">Spotting it in exams</span>
+      </div>
+      <div class="tutor-msgs" id="tutorMsgs_${id}">${msgsHTML}</div>
+      <div class="tutor-input-row">
+        <input class="tutor-input" id="tutorInput_${id}" placeholder="Ask anything about this method..." onkeydown="if(event.key==='Enter')sendMsg(${id})">
+        <button class="btn btn-accent" onclick="sendMsg(${id})" id="tutorSend_${id}">Ask →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel-wrap">
+    <div class="panel-header panel-header-teal${qfOpen?' open':''}" onclick="togglePanel('${qfetchKey}',${id})">
+      <span style="font-size:15px">📄</span>
+      <span class="panel-title panel-title-teal">Past paper questions — Edexcel Higher</span>
+      <span class="panel-chevron${qfOpen?' open':''}">▼</span>
+    </div>
+    <div class="panel-body${qfOpen?' open':''}" id="panelBody_${qfetchKey}">
+      ${qfetchInner}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Example question (4–5 marks)</div>
+    <div class="q-block">${a.example}</div>
+    <div class="tip">Try this question before looking at any worked solutions. The method marks in 4–5 mark questions are mostly awarded for the setup, not the final answer.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">Full past paper practice on PMT</div>
+    <div class="link-row">${linksH}</div>
+  </div>
+
+  <div class="card">
+    <div class="card-label">How did this go?</div>
+    <div class="conf-row">
+      <span class="conf-label">Mark your confidence:</span>
+      ${cbtns}
+    </div>
+  </div>`;
+
+  if (tOpen) scrollMsgs(id);
+}
+
+// ─────────────────────────────────────────────
+// PANEL TOGGLE
+// ─────────────────────────────────────────────
+function togglePanel(key, id) {
+  panelOpen[key] = !panelOpen[key];
+  const body     = document.getElementById('panelBody_' + key);
+  const header   = body.previousElementSibling;
+  const chevron  = header.querySelector('.panel-chevron');
+  if (body)    body.classList.toggle('open', panelOpen[key]);
+  if (header)  header.classList.toggle('open', panelOpen[key]);
+  if (chevron) chevron.classList.toggle('open', panelOpen[key]);
+  if (panelOpen[key] && key.startsWith('tutor')) scrollMsgs(id);
+}
+
+// ─────────────────────────────────────────────
+// QUESTION NAV
+// ─────────────────────────────────────────────
+function changeQ(id, dir) {
+  const qs = SAMPLE_QS[id] || [];
+  qIdx[id] = Math.max(0, Math.min(qs.length - 1, (qIdx[id] || 0) + dir));
+  saveQIdx();
+  panelOpen['qfetch_' + id] = true;
+  showArchetype(id);
+}
+
+// ─────────────────────────────────────────────
+// AI TUTOR
+// ─────────────────────────────────────────────
+function quickAsk(id, text) {
+  const inp = document.getElementById('tutorInput_' + id);
+  if (inp) inp.value = text;
+  sendMsg(id);
+}
+
+async function sendMsg(id) {
+  const a      = ARCHETYPES[id];
+  const inp    = document.getElementById('tutorInput_' + id);
+  const sendEl = document.getElementById('tutorSend_' + id);
+  const msgsEl = document.getElementById('tutorMsgs_' + id);
+  const text   = inp ? inp.value.trim() : '';
+  if (!text) return;
+
+  const key = getKey();
+  if (!key) { showSetup(); return; }
+
+  if (!tutorMsgs[id]) tutorMsgs[id] = [];
+  tutorMsgs[id].push({ role: 'user', content: text });
+  if (inp)    inp.value = '';
+  if (sendEl) sendEl.disabled = true;
+
+  if (msgsEl) {
+    msgsEl.innerHTML = renderMsgs(id) +
+      `<div class="msg msg-ai msg-thinking">Thinking…</div>`;
+    scrollMsgs(id);
+  }
+
+  const system = `You are a patient, expert GCSE Maths tutor helping a 15-year-old student preparing for Edexcel Higher GCSE Maths.
+
+The student is currently studying this archetype: "${a.name}"
+
+Key intuition for this topic:
+${a.intuition}
+
+The 5-step method being studied:
+${a.steps.map((s,i) => `Step ${i+1}: ${s}`).join('\n')}
+
+Your role:
+- Explain clearly and patiently, as if talking to a bright 15-year-old who finds the topic tricky
+- Use concrete numbers when explaining abstract steps
+- Keep responses focused — under 200 words unless working through a full example
+- When giving a worked example, show every step clearly on a new line
+- Be encouraging but honest about what needs practice
+- Write in plain text — no markdown symbols like ** or ## or bullet hyphens`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': key,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-client-side-allow-browser': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-6',
+        max_tokens: 1000,
+        system,
+        messages: tutorMsgs[id].map(m => ({ role: m.role, content: m.content }))
+      })
+    });
+    const data  = await res.json();
+    const reply = data.content?.[0]?.text || 'Sorry, I could not generate a response. Please try again.';
+    tutorMsgs[id].push({ role: 'assistant', content: reply });
+    saveMsgs();
+  } catch(e) {
+    tutorMsgs[id].push({ role: 'assistant', content: 'Something went wrong connecting to the AI — check your API key and try again.' });
+  }
+
+  if (msgsEl) msgsEl.innerHTML = renderMsgs(id);
+  if (sendEl) sendEl.disabled  = false;
+  scrollMsgs(id);
+}
+
+function renderMsgs(id) {
+  const msgs = tutorMsgs[id] || [];
+  if (!msgs.length) return '<div style="font-size:12px;color:var(--ink3);padding:2px 0">Use the quick buttons or type a question below.</div>';
+  return msgs.map(m =>
+    `<div class="msg msg-${m.role === 'user' ? 'user' : 'ai'}">${escHtml(m.content)}</div>`
+  ).join('');
+}
+
+function scrollMsgs(id) {
+  setTimeout(() => {
+    const el = document.getElementById('tutorMsgs_' + id);
+    if (el) el.scrollTop = el.scrollHeight;
+  }, 60);
+}
+
+// ─────────────────────────────────────────────
+// CONFIDENCE
+// ─────────────────────────────────────────────
+function setConf(id, val) {
+  conf[id] = val;
+  saveConf();
+  buildNav();
+  showArchetype(id);
+}
+
+// ─────────────────────────────────────────────
+// UTILITIES
+// ─────────────────────────────────────────────
+function escHtml(str) {
+  return str
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/\n/g,'<br>');
+}
+
+// ─────────────────────────────────────────────
+// INIT
+// ─────────────────────────────────────────────
+load();
+updateKeyStatus();
+buildNav();
+showOverview();
+
+// Show API key prompt on first load if no key set
+if (!getKey()) {
+  setTimeout(showSetup, 800);
+}
+</script>
+</body>
+</html>
