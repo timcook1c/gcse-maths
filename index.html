@@ -825,6 +825,7 @@ async function testKey() {
   btn.disabled = false;
 }
 
+function updateKeyStatus() {
   const has = !!getKey();
   document.getElementById('keyDot').className   = 'key-dot' + (has ? ' active' : '');
   document.getElementById('keyLabel').textContent = has ? 'AI tutor ready' : 'No API key';
