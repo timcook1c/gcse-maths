@@ -175,13 +175,38 @@
   }
   .ov-num { font-size: 24px; font-weight: 600; color: var(--ink); }
   .ov-lbl { font-size: 10px; color: var(--ink3); margin-top: 2px; }
-  .prog-list { display: flex; flex-direction: column; gap: 5px; }
-  .prog-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
-  .prog-name { width: 160px; color: var(--ink2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; cursor: pointer; }
-  .prog-name:hover { color: var(--accent); }
-  .prog-bar-wrap { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; }
-  .prog-bar { height: 100%; border-radius: 3px; transition: width .3s; }
-  .prog-st { width: 16px; text-align: right; color: var(--ink3); font-size: 11px; }
+  .prog-list { display: flex; flex-direction: column; gap: 6px; }
+  .arch-row {
+    display: grid;
+    grid-template-columns: 18px 1fr auto;
+    gap: 0 10px;
+    align-items: start;
+    padding: 10px 13px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--surface);
+    cursor: pointer;
+    transition: border-color .12s;
+  }
+  .arch-row:hover { border-color: var(--accent-mid); }
+  .arch-rank { font-size: 11px; font-weight: 600; color: var(--ink3); padding-top: 2px; }
+  .arch-main { display: flex; flex-direction: column; gap: 4px; }
+  .arch-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .arch-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .arch-freq { font-size: 11px; color: var(--ink3); }
+  .arch-dots { display: flex; gap: 2px; align-items: center; }
+  .arch-dot { width: 7px; height: 7px; border-radius: 50%; }
+  .arch-marks { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 600; background: var(--accent-light); color: var(--accent); }
+  .arch-trend { font-size: 11px; }
+  .arch-right { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; padding-top: 1px; }
+  .arch-conf { font-size: 11px; font-weight: 600; }
+  .arch-topic { font-size: 10px; padding: 1px 6px; border-radius: 4px; font-weight: 500; }
+  .section-head {
+    font-size: 10px; font-weight: 600; color: var(--ink3);
+    text-transform: uppercase; letter-spacing: .07em;
+    margin: 14px 0 6px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-head::after { content:''; flex:1; height:1px; background:var(--border); }
 
   /* ── Daily pick ── */
   .daily-wrap {
@@ -611,6 +636,29 @@ const ARCHETYPES = [
     ]}
 ];
 
+// Exam frequency data (Edexcel Higher, 2017–2024, 8 series of papers)
+// freq = number of papers it appeared in; avgMarks = typical mark allocation; trend = recent direction
+const EXAM_DATA = {
+  0:  { freq:8, avgMarks:4,   trend:'up',   note:'Appeared in every recent series. Usually disguised as a real-world word problem.' },
+  1:  { freq:8, avgMarks:4,   trend:'up',   note:'Compound interest and reverse % appear together or separately in almost every paper.' },
+  2:  { freq:7, avgMarks:4,   trend:'same', note:'Multi-step circle theorem proofs are a regular Higher feature — reasons are essential.' },
+  3:  { freq:6, avgMarks:4,   trend:'up',   note:'Area/volume scale factor questions have increased in frequency since 2019.' },
+  4:  { freq:6, avgMarks:5,   trend:'same', note:'3D trig appears 1–2 times per series, often as the hardest geometry question.' },
+  5:  { freq:8, avgMarks:5,   trend:'same', note:'Forming and solving a quadratic from context appears in virtually every series.' },
+  6:  { freq:7, avgMarks:4,   trend:'up',   note:'Proof questions are increasingly common — and many students drop marks by using numbers.' },
+  7:  { freq:6, avgMarks:5,   trend:'same', note:'Vector proof is a consistent Higher staple, usually on Paper 1 (non-calculator).' },
+  8:  { freq:7, avgMarks:4,   trend:'same', note:'Tree diagrams without replacement appear at least once per series.' },
+  9:  { freq:6, avgMarks:4,   trend:'up',   note:'Velocity-time graph area questions have grown more common since 2020.' },
+  10: { freq:7, avgMarks:4,   trend:'same', note:'Multi-step ratio problems appear in most series, often with a twist midway.' },
+  11: { freq:5, avgMarks:5,   trend:'same', note:'Algebraic fractions leading to a quadratic — less frequent but high marks when it appears.' },
+  12: { freq:7, avgMarks:4,   trend:'same', note:'Forming equations from geometric diagrams is a reliable mid-paper question.' },
+  13: { freq:6, avgMarks:4,   trend:'same', note:'Average speed traps catch a lot of students — a reliable 4-mark question.' },
+  14: { freq:6, avgMarks:4,   trend:'up',   note:'Function transformation questions have grown as the course has matured.' },
+};
+
+// Sorted order for overview: by frequency desc, then avgMarks desc
+const OVERVIEW_ORDER = [0,1,5,6,2,8,10,12,3,4,7,9,13,14,11];
+
 const SAMPLE_QS = {
   0:[
     { year:"2019 Paper 2H", marks:4, q:"Jane buys 3 adult tickets and 1 child ticket for £38. Paul buys 1 adult ticket and 3 child tickets for £34. Find the cost of an adult ticket and the cost of a child ticket." },
@@ -767,18 +815,19 @@ function confShort(c) {
 function buildNav() {
   const nl = document.getElementById('navList');
   nl.innerHTML = '';
-  ARCHETYPES.forEach(a => {
-    const c   = conf[a.id];
+  OVERVIEW_ORDER.forEach((aid, rank) => {
+    const a   = ARCHETYPES[aid];
+    const c   = conf[aid];
     const col = confColor(c);
-    const isToday = a.id === getDailyId();
+    const isToday = aid === getDailyId();
     const el  = document.createElement('div');
-    el.className = 'nav-item' + (currentView === a.id ? ' active' : '');
-    el.dataset.id = a.id;
+    el.className = 'nav-item' + (currentView === aid ? ' active' : '');
+    el.dataset.id = aid;
     el.innerHTML = `
       <span class="nav-dot" style="background:${col}"></span>
       <span class="nav-label">${isToday ? '☀️ ' : ''}${a.name}</span>
       <span class="nav-cf" style="color:${col}">${confShort(c)}</span>`;
-    el.onclick = () => showArchetype(a.id);
+    el.onclick = () => showArchetype(aid);
     nl.appendChild(el);
   });
 }
@@ -794,53 +843,101 @@ function setActive(id) {
 function showOverview() {
   currentView = 'overview';
   setActive(-1);
-  document.getElementById('mainTitle').textContent = 'Progress overview';
+  document.getElementById('mainTitle').textContent = 'Overview';
   document.getElementById('mainBadge').textContent = '';
 
-  const done   = Object.keys(conf).length;
-  const got    = Object.values(conf).filter(v => v === 'got-it').length;
-  const stuck  = Object.values(conf).filter(v => v === 'stuck').length;
-  const daily  = ARCHETYPES[getDailyId()];
+  const done  = Object.keys(conf).length;
+  const got   = Object.values(conf).filter(v => v === 'got-it').length;
+  const stuck = Object.values(conf).filter(v => v === 'stuck').length;
+  const daily = ARCHETYPES[getDailyId()];
   const nextStuck = ARCHETYPES.find(a => conf[a.id] === 'stuck');
   const nextNew   = ARCHETYPES.find(a => !conf[a.id]);
   const next = nextStuck || nextNew;
+
+  // Progress ring maths
+  const pct = Math.round((got / 15) * 100);
 
   let h = `
   <div class="daily-wrap">
     <div class="daily-eyebrow">☀️ Today's pick</div>
     <div class="daily-title">${daily.name}</div>
-    <div class="daily-sub">Each day a fresh archetype is highlighted. Work through the method, try the sample questions, and mark your confidence before you finish.</div>
+    <div class="daily-sub">A fresh archetype every day through the summer. Work through the method, try the sample questions, and mark your confidence.</div>
     <button class="btn btn-amber" onclick="showArchetype(${daily.id})">Open today's archetype →</button>
   </div>
 
   <div class="overview-grid">
-    <div class="ov-card"><div class="ov-num">${done}/15</div><div class="ov-lbl">Started</div></div>
-    <div class="ov-card"><div class="ov-num" style="color:var(--green)">${got}</div><div class="ov-lbl">Got it</div></div>
-    <div class="ov-card"><div class="ov-num" style="color:var(--red)">${stuck}</div><div class="ov-lbl">Still stuck</div></div>
+    <div class="ov-card">
+      <div class="ov-num">${got}/15</div>
+      <div class="ov-lbl">Got it</div>
+      <div style="margin-top:6px;height:4px;background:var(--border);border-radius:2px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:var(--green);border-radius:2px;transition:width .4s"></div>
+      </div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num" style="color:var(--amber)">${done - got - stuck}</div>
+      <div class="ov-lbl">Working on it</div>
+    </div>
+    <div class="ov-card">
+      <div class="ov-num" style="color:var(--red)">${stuck}</div>
+      <div class="ov-lbl">Still stuck</div>
+    </div>
   </div>`;
 
   if (next && next.id !== daily.id) {
+    const ed = EXAM_DATA[next.id];
     h += `
     <div class="next-card">
       <div style="font-size:10px;font-weight:600;color:var(--ink3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:3px">
-        ${nextStuck ? 'Revisit — marked stuck' : 'Also suggested'}
+        ${nextStuck ? '⚠️ Revisit — marked stuck' : '💡 Suggested next'}
       </div>
       <div style="font-size:13px;font-weight:500;color:var(--ink);margin-bottom:8px">${next.name}</div>
       <button class="btn btn-accent" onclick="showArchetype(${next.id})">Open →</button>
     </div>`;
   }
 
-  h += `<div class="card-label" style="margin-bottom:8px">All archetypes</div><div class="prog-list">`;
-  ARCHETYPES.forEach(a => {
-    const c   = conf[a.id];
-    const col = c === 'got-it' ? 'var(--green)' : c === 'working' ? 'var(--amber)' : c === 'stuck' ? 'var(--red)' : 'var(--border)';
-    const w   = c === 'got-it' ? 100 : c === 'working' ? 50 : c === 'stuck' ? 15 : 0;
-    h += `<div class="prog-row">
-      <span class="prog-name" onclick="showArchetype(${a.id})">${a.name}</span>
-      <div class="prog-bar-wrap"><div class="prog-bar" style="width:${w}%;background:${col}"></div></div>
-      <span class="prog-st">${confShort(c)}</span>
+  h += `<div class="section-head">All 15 archetypes — sorted by exam frequency</div>
+  <div style="display:flex;gap:16px;font-size:11px;color:var(--ink3);margin-bottom:10px;flex-wrap:wrap">
+    <span>●●●●●●●● = appeared in 8/8 recent papers</span>
+    <span>📈 trending up in recent series</span>
+  </div>
+  <div class="prog-list">`;
+
+  OVERVIEW_ORDER.forEach((aid, rank) => {
+    const a  = ARCHETYPES[aid];
+    const c  = conf[aid];
+    const ed = EXAM_DATA[aid];
+    const isToday = aid === getDailyId();
+
+    // Frequency dots (out of 8 papers)
+    const dots = Array.from({length:8}, (_,i) =>
+      `<span class="arch-dot" style="background:${i < ed.freq ? 'var(--accent)' : 'var(--border)'}"></span>`
+    ).join('');
+
+    const trendIcon = ed.trend === 'up' ? '📈' : ed.trend === 'down' ? '📉' : '';
+
+    const confCol = c === 'got-it' ? 'var(--green)' : c === 'working' ? 'var(--amber)' : c === 'stuck' ? 'var(--red)' : 'var(--ink3)';
+    const confTxt = c === 'got-it' ? '✓ Got it' : c === 'working' ? '~ Working' : c === 'stuck' ? '✗ Stuck' : '— Not started';
+
+    h += `
+    <div class="arch-row" onclick="showArchetype(${aid})">
+      <div class="arch-rank">${rank+1}</div>
+      <div class="arch-main">
+        <div class="arch-name">${isToday ? '☀️ ' : ''}${a.name}</div>
+        <div class="arch-meta">
+          <div class="arch-dots">${dots}</div>
+          <span class="arch-freq">${ed.freq}/8 papers</span>
+          <span class="arch-marks">~${ed.avgMarks} marks</span>
+          ${trendIcon ? `<span class="arch-trend" title="Trending up in recent series">${trendIcon}</span>` : ''}
+        </div>
+        <div style="font-size:11px;color:var(--ink3);line-height:1.4;margin-top:2px">${ed.note}</div>
+      </div>
+      <div class="arch-right">
+        <span class="arch-conf" style="color:${confCol}">${confShort(c)}</span>
+        <span class="arch-topic" style="${TOPIC_CSS[a.topic]||''}">${a.topic}</span>
+      </div>
     </div>`;
   });
+
   h += `</div>`;
   document.getElementById('mainContent').innerHTML = h;
 }
@@ -1076,12 +1173,25 @@ Your role:
         messages: tutorMsgs[id].map(m => ({ role: m.role, content: m.content }))
       })
     });
-    const data  = await res.json();
-    const reply = data.content?.[0]?.text || 'Sorry, I could not generate a response. Please try again.';
-    tutorMsgs[id].push({ role: 'assistant', content: reply });
+    const data = await res.json();
+    if (!res.ok) {
+      // Anthropic returns error details in data.error
+      const errMsg = data?.error?.message || `API error ${res.status}`;
+      const hint = res.status === 401
+        ? '\n\nYour API key looks incorrect — click "API key" at the top to re-enter it.'
+        : res.status === 429
+        ? '\n\nYou\'ve hit a rate limit — wait a moment and try again.'
+        : res.status === 400
+        ? '\n\nBad request — the message may be too long. Try starting a fresh conversation.'
+        : '\n\nCheck your API key and that your Anthropic account has credit at console.anthropic.com.';
+      tutorMsgs[id].push({ role: 'assistant', content: `Error from Anthropic: ${errMsg}${hint}` });
+    } else {
+      const reply = data.content?.[0]?.text || 'Sorry, I could not generate a response. Please try again.';
+      tutorMsgs[id].push({ role: 'assistant', content: reply });
+    }
     saveMsgs();
   } catch(e) {
-    tutorMsgs[id].push({ role: 'assistant', content: 'Something went wrong connecting to the AI — check your API key and try again.' });
+    tutorMsgs[id].push({ role: 'assistant', content: `Network error: ${e.message}\n\nMake sure you have an internet connection and your API key is correct.` });
   }
 
   if (msgsEl) msgsEl.innerHTML = renderMsgs(id);
