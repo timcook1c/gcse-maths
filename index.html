@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GCSE Maths Trainer — Edexcel Higher</title>
-<script>document.addEventListener('DOMContentLoaded',function(){var v='v27/6 15:50';document.title='GCSE Maths Trainer '+v;var el=document.getElementById('appVersion');if(el)el.textContent=v;});</script>
+<script>document.addEventListener('DOMContentLoaded',function(){var v='v27/6 17:30';document.title='GCSE Maths Trainer '+v;var el=document.getElementById('appVersion');if(el)el.textContent=v;});</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -799,7 +799,7 @@ async function testKey() {
         'Content-Type': 'application/json',
         'x-api-key': k,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-client-side-allow-browser': 'true'
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
@@ -1210,7 +1210,7 @@ Your role:
         'Content-Type': 'application/json',
         'x-api-key': key,
         'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-client-side-allow-browser': 'true'
+        'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
         model: 'claude-sonnet-4-6',
