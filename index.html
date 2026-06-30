@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GCSE Maths Trainer — Edexcel Higher</title>
-<script>document.addEventListener('DOMContentLoaded',function(){var v='v27/6 17:30';document.title='GCSE Maths Trainer '+v;var el=document.getElementById('appVersion');if(el)el.textContent=v;});</script>
+<script>document.addEventListener('DOMContentLoaded',function(){var v='v29/6 09:30';document.title='GCSE Maths Trainer '+v;var el=document.getElementById('appVersion');if(el)el.textContent=v;});</script>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -371,6 +371,7 @@
   <!-- Main -->
   <main class="main">
     <div class="topbar">
+      <button id="backBtn" onclick="showOverview()" style="display:none;background:none;border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:12px;color:var(--ink2);cursor:pointer;flex-shrink:0" onmouseover="this.style.borderColor='var(--accent-mid)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--ink2)'">← Overview</button>
       <h2 id="mainTitle">Overview</h2>
       <span id="mainBadge"></span>
     </div>
@@ -749,8 +750,697 @@ const TOPIC_CSS = {
 };
 
 // ─────────────────────────────────────────────
-// STATE
+// CONCEPTUAL DIAGRAMS (per archetype id)
 // ─────────────────────────────────────────────
+const DIAGRAMS = {
+  2: {
+    label: 'Circle theorems — visual reference',
+    html: `
+<style>
+.ct-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px;margin-top:4px}
+.ct-card{border:1px solid var(--border);border-radius:8px;padding:10px 10px 8px;background:var(--surface2);cursor:pointer;transition:border-color .15s}
+.ct-card:hover{border-color:var(--accent-mid)}
+.ct-card.active{border-color:var(--accent);background:var(--accent-light)}
+.ct-name{font-size:11px;font-weight:600;color:var(--ink);margin-bottom:2px;line-height:1.3}
+.ct-rule{font-size:11px;color:var(--ink2);line-height:1.4;margin-top:4px}
+.ct-rule span{color:var(--accent);font-weight:600}
+</style>
+<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">Click any theorem to highlight it. Each one may be needed as a reasoning step — always write the theorem name in your answer.</div>
+<div class="ct-grid" id="ctGrid">
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">1. Angle at centre</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="60" cy="58" r="42" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <circle cx="60" cy="58" r="3" fill="#4338CA"/>
+    <!-- two radii -->
+    <line x1="60" y1="58" x2="25" y2="88" stroke="#4338CA" stroke-width="1.5"/>
+    <line x1="60" y1="58" x2="95" y2="88" stroke="#4338CA" stroke-width="1.5"/>
+    <!-- arc chord -->
+    <line x1="25" y1="88" x2="95" y2="88" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+    <!-- point on circumference -->
+    <circle cx="60" cy="16" r="3" fill="#0f766e"/>
+    <line x1="60" y1="16" x2="25" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+    <line x1="60" y1="16" x2="95" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+    <!-- labels -->
+    <text x="60" y="54" text-anchor="middle" font-size="9" fill="#4338CA" font-weight="bold">2α</text>
+    <text x="60" y="24" text-anchor="middle" font-size="9" fill="#0f766e" font-weight="bold">α</text>
+    <text x="22" y="97" font-size="8" fill="#64748b">A</text>
+    <text x="92" y="97" font-size="8" fill="#64748b">B</text>
+    <text x="56" y="64" font-size="7" fill="#4338CA">O</text>
+  </svg>
+  <div class="ct-rule">Angle at centre = <span>twice</span> angle at circumference, over same arc</div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">2. Same segment</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="60" cy="58" r="42" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <line x1="25" y1="88" x2="95" y2="88" stroke="#94a3b8" stroke-width="1.5"/>
+    <circle cx="40" cy="22" r="3" fill="#0f766e"/>
+    <circle cx="80" cy="18" r="3" fill="#b45309"/>
+    <line x1="40" y1="22" x2="25" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+    <line x1="40" y1="22" x2="95" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+    <line x1="80" y1="18" x2="25" y2="88" stroke="#b45309" stroke-width="1.5"/>
+    <line x1="80" y1="18" x2="95" y2="88" stroke="#b45309" stroke-width="1.5"/>
+    <text x="42" y="32" font-size="9" fill="#0f766e" font-weight="bold">α</text>
+    <text x="76" y="28" font-size="9" fill="#b45309" font-weight="bold">α</text>
+    <text x="22" y="97" font-size="8" fill="#64748b">A</text>
+    <text x="92" y="97" font-size="8" fill="#64748b">B</text>
+  </svg>
+  <div class="ct-rule">Angles in the <span>same segment</span> are equal</div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">3. Angle in semicircle</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="60" cy="72" r="42" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <circle cx="60" cy="72" r="3" fill="#4338CA"/>
+    <line x1="18" y1="72" x2="102" y2="72" stroke="#4338CA" stroke-width="1.5"/>
+    <circle cx="60" cy="30" r="3" fill="#0f766e"/>
+    <line x1="60" y1="30" x2="18" y2="72" stroke="#0f766e" stroke-width="1.5"/>
+    <line x1="60" y1="30" x2="102" y2="72" stroke="#0f766e" stroke-width="1.5"/>
+    <!-- right angle marker -->
+    <polyline points="53,30 53,37 60,37" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+    <text x="56" y="26" font-size="9" fill="#dc2626" font-weight="bold">90°</text>
+    <text x="14" y="82" font-size="8" fill="#64748b">A</text>
+    <text x="99" y="82" font-size="8" fill="#64748b">B</text>
+    <text x="56" y="78" font-size="7" fill="#4338CA">O</text>
+  </svg>
+  <div class="ct-rule">Angle in a <span>semicircle</span> is always 90° (diameter = hypotenuse)</div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">4. Cyclic quadrilateral</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="60" cy="55" r="42" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <polygon points="18,70 50,14 102,45 75,100" fill="none" stroke="#4338CA" stroke-width="1.5"/>
+    <circle cx="18" cy="70" r="2.5" fill="#4338CA"/>
+    <circle cx="50" cy="14" r="2.5" fill="#4338CA"/>
+    <circle cx="102" cy="45" r="2.5" fill="#4338CA"/>
+    <circle cx="75" cy="100" r="2.5" fill="#4338CA"/>
+    <text x="6" y="70" font-size="9" fill="#4338CA" font-weight="bold">α</text>
+    <text x="75" y="102" font-size="9" fill="#0f766e" font-weight="bold">180−α</text>
+    <text x="44" y="12" font-size="9" fill="#b45309" font-weight="bold">β</text>
+    <text x="100" y="42" font-size="9" fill="#dc2626" font-weight="bold">180−β</text>
+  </svg>
+  <div class="ct-rule">Opposite angles in a cyclic quad sum to <span>180°</span></div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">5. Tangent & radius</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="55" cy="52" r="36" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <circle cx="55" cy="52" r="3" fill="#4338CA"/>
+    <!-- tangent point -->
+    <circle cx="91" cy="52" r="3" fill="#0f766e"/>
+    <!-- radius -->
+    <line x1="55" y1="52" x2="91" y2="52" stroke="#4338CA" stroke-width="1.5"/>
+    <!-- tangent line -->
+    <line x1="91" y1="14" x2="91" y2="90" stroke="#0f766e" stroke-width="2"/>
+    <!-- right angle marker -->
+    <polyline points="83,52 83,60 91,60" fill="none" stroke="#dc2626" stroke-width="1.2"/>
+    <text x="56" y="48" font-size="7" fill="#4338CA">O</text>
+    <text x="70" y="48" font-size="9" fill="#dc2626" font-weight="bold">90°</text>
+    <text x="93" y="14" font-size="8" fill="#0f766e">tangent</text>
+  </svg>
+  <div class="ct-rule">Tangent meets radius at <span>90°</span> at point of contact</div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">6. Two tangents</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="52" cy="55" r="34" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <circle cx="52" cy="55" r="3" fill="#4338CA"/>
+    <!-- external point -->
+    <circle cx="108" cy="55" r="3" fill="#b45309"/>
+    <!-- tangent lines -->
+    <line x1="108" y1="55" x2="62" y2="22" stroke="#0f766e" stroke-width="1.5"/>
+    <line x1="108" y1="55" x2="62" y2="88" stroke="#0f766e" stroke-width="1.5"/>
+    <!-- equal marks -->
+    <text x="80" y="32" font-size="9" fill="#0f766e" font-weight="bold">t</text>
+    <text x="80" y="82" font-size="9" fill="#0f766e" font-weight="bold">t</text>
+    <text x="105" y="50" font-size="8" fill="#b45309">P</text>
+    <text x="48" y="52" font-size="7" fill="#4338CA">O</text>
+    <text x="58" y="18" font-size="8" fill="#64748b">A</text>
+    <text x="58" y="96" font-size="8" fill="#64748b">B</text>
+  </svg>
+  <div class="ct-rule">Two tangents from external point P: <span>PA = PB</span></div>
+</div>
+
+<div class="ct-card" onclick="selectCT(this)">
+  <div class="ct-name">7. Alternate segment</div>
+  <svg viewBox="0 0 120 110" width="100%" style="display:block">
+    <circle cx="60" cy="55" r="40" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
+    <!-- tangent -->
+    <line x1="10" y1="95" x2="110" y2="95" stroke="#0f766e" stroke-width="2"/>
+    <!-- chord from tangent point -->
+    <circle cx="60" cy="95" r="3" fill="#0f766e"/>
+    <circle cx="28" cy="30" r="3" fill="#4338CA"/>
+    <circle cx="92" cy="30" r="3" fill="#b45309"/>
+    <line x1="60" y1="95" x2="28" y2="30" stroke="#4338CA" stroke-width="1.5"/>
+    <line x1="28" y1="30" x2="92" y2="30" stroke="#94a3b8" stroke-width="1.2"/>
+    <line x1="60" y1="95" x2="92" y2="30" stroke="#b45309" stroke-width="1"/>
+    <!-- angle in alternate segment -->
+    <text x="52" y="84" font-size="9" fill="#0f766e" font-weight="bold">α</text>
+    <text x="34" y="42" font-size="9" fill="#4338CA" font-weight="bold">α</text>
+    <text x="8" y="91" font-size="8" fill="#0f766e">tangent</text>
+  </svg>
+  <div class="ct-rule">Angle between tangent and chord = <span>angle in alternate segment</span></div>
+</div>
+
+</div>
+
+`
+  },
+  1: {
+    label: 'Reverse percentage & compound interest — the key pictures',
+    html: `
+<style>
+.rp-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:4px}
+.rp-card{border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface2)}
+.rp-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.rp-sub{font-size:11px;color:var(--ink3);margin-bottom:8px;line-height:1.4}
+.rp-rule{font-size:11px;color:var(--ink2);line-height:1.5;margin-top:8px}
+.rp-rule span{font-weight:600;color:var(--accent)}
+.mult-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;margin-top:4px}
+.mult-row{display:flex;align-items:center;justify-content:space-between;padding:4px 8px;border-radius:5px;font-size:11px}
+.mult-inc{background:#f0fdf4;color:#16a34a}
+.mult-dec{background:#fef2f2;color:#dc2626}
+.mult-key{font-weight:600;font-family:monospace}
+</style>
+<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">Two separate traps — one on each question type. Spot which trap applies before you calculate.</div>
+<div class="rp-grid">
+
+<div class="rp-card">
+  <div class="rp-title">Reverse %: the one-way street</div>
+  <div class="rp-sub">The multiplier takes you forward. Dividing brings you back.</div>
+  <svg viewBox="0 0 210 155" width="100%" style="display:block">
+    <defs>
+      <marker id="rp1" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#4338CA"/></marker>
+      <marker id="rp2" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#16a34a"/></marker>
+      <marker id="rp3" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L7,3.5 L0,7 Z" fill="#dc2626"/></marker>
+    </defs>
+    <!-- Original box -->
+    <rect x="8" y="28" width="70" height="36" rx="6" fill="#EEF2FF" stroke="#818CF8" stroke-width="1.5"/>
+    <text x="43" y="43" font-size="9" fill="#4338CA" text-anchor="middle">Original</text>
+    <text x="43" y="56" font-size="13" fill="#4338CA" font-weight="700" text-anchor="middle">£200</text>
+    <!-- Result box -->
+    <rect x="132" y="28" width="70" height="36" rx="6" fill="#e0fdf4" stroke="#5eead4" stroke-width="1.5"/>
+    <text x="167" y="43" font-size="9" fill="#0f766e" text-anchor="middle">Result</text>
+    <text x="167" y="56" font-size="13" fill="#0f766e" font-weight="700" text-anchor="middle">£160</text>
+    <!-- Forward arrow: ×0.8 -->
+    <line x1="82" y1="42" x2="128" y2="42" stroke="#4338CA" stroke-width="2" marker-end="url(#rp1)"/>
+    <rect x="88" y="28" width="36" height="16" rx="3" fill="white"/>
+    <text x="106" y="40" font-size="10" fill="#4338CA" font-weight="700" text-anchor="middle">× 0.8</text>
+    <text x="106" y="24" font-size="8" fill="#555" text-anchor="middle">20% decrease</text>
+    <!-- Reverse arrow: ÷0.8 (correct) -->
+    <line x1="128" y1="72" x2="82" y2="72" stroke="#16a34a" stroke-width="2" marker-end="url(#rp2)"/>
+    <rect x="88" y="72" width="36" height="16" rx="3" fill="white"/>
+    <text x="106" y="83" font-size="10" fill="#16a34a" font-weight="700" text-anchor="middle">÷ 0.8</text>
+    <text x="106" y="96" font-size="8" fill="#16a34a" text-anchor="middle">✓ Correct reverse</text>
+    <!-- Wrong method: subtract 20% of result -->
+    <line x1="128" y1="112" x2="82" y2="112" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#rp3)"/>
+    <text x="106" y="108" font-size="9" fill="#dc2626" font-weight="600" text-anchor="middle">− 20% of £160</text>
+    <text x="106" y="122" font-size="8" fill="#dc2626" text-anchor="middle">✗ Wrong — gives £128</text>
+    <!-- cross through wrong -->
+    <text x="10" y="118" font-size="18" fill="#dc2626" opacity="0.5">✗</text>
+  </svg>
+  <div class="rp-rule">Always <span>divide by the multiplier</span>. Never subtract the % from the result — that gives the wrong base.</div>
+</div>
+
+<div class="rp-card">
+  <div class="rp-title">Multiplier quick reference</div>
+  <div class="rp-sub">Write these down before calculating — pick the right one first</div>
+  <div class="mult-grid">
+    <div class="mult-row mult-inc"><span>+5%</span><span class="mult-key">×1.05</span></div>
+    <div class="mult-row mult-dec"><span>−5%</span><span class="mult-key">×0.95</span></div>
+    <div class="mult-row mult-inc"><span>+10%</span><span class="mult-key">×1.10</span></div>
+    <div class="mult-row mult-dec"><span>−10%</span><span class="mult-key">×0.90</span></div>
+    <div class="mult-row mult-inc"><span>+15%</span><span class="mult-key">×1.15</span></div>
+    <div class="mult-row mult-dec"><span>−15%</span><span class="mult-key">×0.85</span></div>
+    <div class="mult-row mult-inc"><span>+20%</span><span class="mult-key">×1.20</span></div>
+    <div class="mult-row mult-dec"><span>−20%</span><span class="mult-key">×0.80</span></div>
+    <div class="mult-row mult-inc"><span>+25%</span><span class="mult-key">×1.25</span></div>
+    <div class="mult-row mult-dec"><span>−25%</span><span class="mult-key">×0.75</span></div>
+    <div class="mult-row mult-inc"><span>+50%</span><span class="mult-key">×1.50</span></div>
+    <div class="mult-row mult-dec"><span>−50%</span><span class="mult-key">×0.50</span></div>
+  </div>
+  <div class="rp-rule">Pattern: increase → 1 + (% ÷ 100). Decrease → 1 − (% ÷ 100). <span>Reverse: divide by it.</span></div>
+</div>
+
+<div class="rp-card">
+  <div class="rp-title">Simple vs compound interest</div>
+  <div class="rp-sub">£1,000 at 20% for 4 years — same rate, very different totals</div>
+  <svg viewBox="0 0 210 160" width="100%" style="display:block">
+    <!-- y axis -->
+    <line x1="30" y1="6" x2="30" y2="135" stroke="#cbd5e1" stroke-width="1.5"/>
+    <!-- x axis -->
+    <line x1="30" y1="135" x2="195" y2="135" stroke="#cbd5e1" stroke-width="1.5"/>
+    <!-- y axis labels: scale is 1px = £1000/120 = £8.33, origin (30,135) = £1000 -->
+    <text x="2" y="138" font-size="7" fill="#94a3b8">£1.0k</text>
+    <text x="2" y="111" font-size="7" fill="#94a3b8">£1.2k</text>
+    <text x="2" y="87" font-size="7" fill="#94a3b8">£1.4k</text>
+    <text x="2" y="63" font-size="7" fill="#94a3b8">£1.6k</text>
+    <text x="2" y="39" font-size="7" fill="#94a3b8">£1.8k</text>
+    <text x="2" y="9" font-size="7" fill="#94a3b8">£2.1k</text>
+    <!-- x axis labels -->
+    <text x="28" y="147" font-size="7" fill="#94a3b8">0</text>
+    <text x="66" y="147" font-size="7" fill="#94a3b8">1yr</text>
+    <text x="104" y="147" font-size="7" fill="#94a3b8">2yr</text>
+    <text x="142" y="147" font-size="7" fill="#94a3b8">3yr</text>
+    <text x="178" y="147" font-size="7" fill="#94a3b8">4yr</text>
+    <!-- grid lines -->
+    <line x1="30" y1="111" x2="195" y2="111" stroke="#f0f0ec" stroke-width="1"/>
+    <line x1="30" y1="87" x2="195" y2="87" stroke="#f0f0ec" stroke-width="1"/>
+    <line x1="30" y1="63" x2="195" y2="63" stroke="#f0f0ec" stroke-width="1"/>
+    <line x1="30" y1="39" x2="195" y2="39" stroke="#f0f0ec" stroke-width="1"/>
+    <!-- Simple interest: £1000 +£200/yr → 1000,1200,1400,1600,1800 -->
+    <!-- scale: 1px=£8.33, y=135-(val-1000)/8.33 → 135,111,87,63,39 -->
+    <polyline points="30,135 68,111 106,87 144,63 182,39" fill="none" stroke="#94a3b8" stroke-width="2" stroke-dasharray="5,3"/>
+    <circle cx="30" cy="135" r="3" fill="#94a3b8"/>
+    <circle cx="68" cy="111" r="3" fill="#94a3b8"/>
+    <circle cx="106" cy="87" r="3" fill="#94a3b8"/>
+    <circle cx="144" cy="63" r="3" fill="#94a3b8"/>
+    <circle cx="182" cy="39" r="3" fill="#94a3b8"/>
+    <!-- Compound interest: 1000×1.2^n → 1000,1200,1440,1728,2073.6 -->
+    <!-- same scale: y=135-(val-1000)/8.33 → 135,111,82,48,6 -->
+    <!-- Year 1 is IDENTICAL to simple — compounding has no effect until year 2 -->
+    <polyline points="30,135 68,111 106,82 144,48 182,6" fill="none" stroke="#4338CA" stroke-width="2.5"/>
+    <circle cx="30" cy="135" r="3.5" fill="#4338CA"/>
+    <circle cx="68" cy="111" r="3.5" fill="#4338CA"/>
+    <circle cx="106" cy="82" r="3.5" fill="#4338CA"/>
+    <circle cx="144" cy="48" r="3.5" fill="#4338CA"/>
+    <circle cx="182" cy="6" r="3.5" fill="#4338CA"/>
+    <!-- callout marking where they diverge -->
+    <circle cx="68" cy="111" r="6" fill="none" stroke="#b45309" stroke-width="1.2" stroke-dasharray="2,1"/>
+    <text x="68" y="100" font-size="7" fill="#b45309" text-anchor="middle" font-weight="600">same at yr 1</text>
+    <!-- gap annotation at year 4 -->
+    <line x1="184" y1="6" x2="184" y2="39" stroke="#dc2626" stroke-width="1.5" stroke-dasharray="2,1"/>
+    <text x="187" y="25" font-size="8" fill="#dc2626" font-weight="600">+£274</text>
+    <!-- legend -->
+    <line x1="32" y1="151" x2="52" y2="151" stroke="#4338CA" stroke-width="2.5"/>
+    <text x="54" y="154" font-size="8" fill="#4338CA">Compound</text>
+    <line x1="110" y1="151" x2="130" y2="151" stroke="#94a3b8" stroke-width="2" stroke-dasharray="4,2"/>
+    <text x="132" y="154" font-size="8" fill="#94a3b8">Simple</text>
+  </svg>
+  <div class="rp-rule">Years 0–1 are identical — <span>compounding only kicks in once there's interest-on-interest</span>. From year 2 the gap grows every year.</div>
+</div>
+
+</div>
+<div style="margin-top:10px;padding:8px 10px;background:var(--amber-light);border-radius:6px;border-left:3px solid var(--amber);font-size:11px;color:var(--amber)">
+  <strong>The two exam traps:</strong> Reverse % → never subtract, always divide by the multiplier. Compound → never add the same amount each year, always multiply by the multiplier again.
+</div>
+`
+  },
+  0: {
+    label: 'Simultaneous equations — the geometric picture',
+    html: `
+<style>
+.se-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;margin-top:4px}
+.se-card{border:1px solid var(--border);border-radius:8px;padding:12px;background:var(--surface2)}
+.se-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.se-sub{font-size:11px;color:var(--ink3);margin-bottom:8px;line-height:1.4}
+.se-rule{font-size:11px;color:var(--ink2);line-height:1.5;margin-top:8px}
+.se-rule span{font-weight:600;color:var(--accent)}
+.se-eq{font-family:monospace;font-size:12px;font-weight:600;padding:3px 8px;border-radius:4px;display:inline-block;margin:2px 0}
+</style>
+<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">The geometric picture makes the algebra feel inevitable rather than arbitrary.</div>
+<div class="se-grid">
+
+<div class="se-card">
+  <div class="se-title">Each equation is a line</div>
+  <div class="se-sub">The solution is where the two lines cross</div>
+  <svg viewBox="0 0 210 185" width="100%" style="display:block">
+    <defs>
+      <marker id="se1" markerWidth="6" markerHeight="6" refX="5" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#94a3b8"/></marker>
+    </defs>
+    <!-- grid -->
+    <line x1="55" y1="15" x2="55" y2="168" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="85" y1="15" x2="85" y2="168" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="115" y1="15" x2="115" y2="168" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="145" y1="15" x2="145" y2="168" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="25" y1="45" x2="185" y2="45" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="25" y1="75" x2="185" y2="75" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="25" y1="105" x2="185" y2="105" stroke="#f0f0ec" stroke-width="7"/>
+    <line x1="25" y1="135" x2="185" y2="135" stroke="#f0f0ec" stroke-width="7"/>
+    <!-- axes -->
+    <line x1="25" y1="165" x2="190" y2="165" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#se1)"/>
+    <line x1="25" y1="170" x2="25" y2="12" stroke="#cbd5e1" stroke-width="1.5" marker-end="url(#se1)"/>
+    <text x="192" y="168" font-size="9" fill="#94a3b8">x</text>
+    <text x="27" y="11" font-size="9" fill="#94a3b8">y</text>
+    <!-- axis tick labels -->
+    <text x="52" y="177" font-size="8" fill="#94a3b8">1</text>
+    <text x="82" y="177" font-size="8" fill="#94a3b8">2</text>
+    <text x="112" y="177" font-size="8" fill="#94a3b8">3</text>
+    <text x="142" y="177" font-size="8" fill="#94a3b8">4</text>
+    <text x="172" y="177" font-size="8" fill="#94a3b8">5</text>
+    <text x="14" y="138" font-size="8" fill="#94a3b8">1</text>
+    <text x="14" y="108" font-size="8" fill="#94a3b8">2</text>
+    <text x="14" y="78" font-size="8" fill="#94a3b8">3</text>
+    <text x="14" y="48" font-size="8" fill="#94a3b8">4</text>
+    <!-- Line 1: x+2y=8, from (0,4)→svg(25,45) to (5,1.5)→svg(175,120) -->
+    <line x1="25" y1="45" x2="175" y2="120" stroke="#4338CA" stroke-width="2.5"/>
+    <!-- label bottom right, well clear of crossing -->
+    <text x="148" y="132" font-size="9" fill="#4338CA" font-weight="600">x+2y=8</text>
+    <!-- Line 2: 3x-y=3, from (1,0)→svg(55,165) to (2.7,5.1)→svg(106,12) -->
+    <line x1="55" y1="165" x2="106" y2="12" stroke="#0f766e" stroke-width="2.5"/>
+    <!-- label top right, clear of crossing -->
+    <text x="108" y="14" font-size="9" fill="#0f766e" font-weight="600">3x−y=3</text>
+    <!-- intersection at (2,3)→svg(85,75) — clear open space -->
+    <circle cx="85" cy="75" r="7" fill="white" stroke="#dc2626" stroke-width="2.5"/>
+    <circle cx="85" cy="75" r="3" fill="#dc2626"/>
+    <!-- dotted lines to axes -->
+    <line x1="85" y1="75" x2="85" y2="165" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
+    <line x1="85" y1="75" x2="25" y2="75" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2"/>
+    <text x="80" y="177" font-size="9" fill="#dc2626" font-weight="700">2</text>
+    <text x="6" y="78" font-size="9" fill="#dc2626" font-weight="700">3</text>
+    <!-- callout to the right in open space -->
+    <rect x="100" y="57" width="48" height="30" rx="4" fill="white" stroke="#dc2626" stroke-width="1.2"/>
+    <line x1="93" y1="73" x2="100" y2="70" stroke="#dc2626" stroke-width="1"/>
+    <text x="124" y="70" font-size="9" fill="#dc2626" font-weight="700" text-anchor="middle">x = 2</text>
+    <text x="124" y="82" font-size="9" fill="#dc2626" font-weight="700" text-anchor="middle">y = 3</text>
+  </svg>
+  <div class="se-rule">Two equations = two lines. <span>One solution = one crossing point.</span> The algebra finds that point exactly — no drawing needed.</div>
+</div>
+
+<div class="se-card">
+  <div class="se-title">Translating the word problem</div>
+  <div class="se-sub">Every fact in the question becomes one line</div>
+  <svg viewBox="0 0 210 190" width="100%" style="display:block">
+    <!-- Fact 1 box -->
+    <rect x="8" y="12" width="194" height="36" rx="6" fill="#EEF2FF" stroke="#818CF8" stroke-width="1"/>
+    <text x="105" y="26" font-size="9" fill="#4338CA" text-anchor="middle">"3 adults and 2 children cost £29"</text>
+    <text x="105" y="40" font-size="11" fill="#4338CA" font-weight="700" text-anchor="middle" font-family="monospace">3a + 2c = 29</text>
+    <!-- arrow down -->
+    <line x1="105" y1="48" x2="105" y2="58" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="100,58 110,58 105,65" fill="#94a3b8"/>
+    <!-- Fact 2 box -->
+    <rect x="8" y="66" width="194" height="36" rx="6" fill="#e0fdf4" stroke="#5eead4" stroke-width="1"/>
+    <text x="105" y="80" font-size="9" fill="#0f766e" text-anchor="middle">"1 adult and 3 children cost £22"</text>
+    <text x="105" y="94" font-size="11" fill="#0f766e" font-weight="700" text-anchor="middle" font-family="monospace">1a + 3c = 22</text>
+    <!-- arrow down -->
+    <line x1="105" y1="102" x2="105" y2="112" stroke="#94a3b8" stroke-width="1.5"/>
+    <polygon points="100,112 110,112 105,119" fill="#94a3b8"/>
+    <!-- Solve box -->
+    <rect x="8" y="120" width="194" height="58" rx="6" fill="#fff7ed" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="105" y="135" font-size="9" fill="#b45309" text-anchor="middle" font-weight="600">Eliminate c: multiply eq1 ×3, eq2 ×2</text>
+    <text x="105" y="149" font-size="10" fill="#b45309" text-anchor="middle" font-family="monospace">9a + 6c = 87</text>
+    <text x="105" y="162" font-size="10" fill="#b45309" text-anchor="middle" font-family="monospace">2a + 6c = 44  →  subtract</text>
+    <text x="105" y="175" font-size="11" fill="#dc2626" text-anchor="middle" font-weight="700" font-family="monospace">7a = 43  →  a = £5</text>
+  </svg>
+  <div class="se-rule"><span>Name your unknowns first.</span> Each sentence gives one equation. Two unknowns need exactly two equations.</div>
+</div>
+
+<div class="se-card">
+  <div class="se-title">Why elimination works</div>
+  <div class="se-sub">Scaling an equation keeps the same line — but lets terms cancel</div>
+  <svg viewBox="0 0 210 180" width="100%" style="display:block">
+    <!-- Original equation -->
+    <rect x="8" y="10" width="194" height="28" rx="5" fill="#EEF2FF" stroke="#818CF8" stroke-width="1"/>
+    <text x="105" y="29" font-size="12" fill="#4338CA" font-weight="700" text-anchor="middle" font-family="monospace">x + 4y = 11</text>
+    <!-- multiply by 3 -->
+    <text x="105" y="52" font-size="9" fill="#94a3b8" text-anchor="middle">× 3 (multiply every term by 3)</text>
+    <line x1="40" y1="56" x2="170" y2="56" stroke="#94a3b8" stroke-width="1" stroke-dasharray="3,2"/>
+    <rect x="8" y="60" width="194" height="28" rx="5" fill="#EEF2FF" stroke="#818CF8" stroke-width="1"/>
+    <text x="105" y="79" font-size="12" fill="#4338CA" font-weight="700" text-anchor="middle" font-family="monospace">3x + 12y = 33</text>
+    <!-- vs other equation -->
+    <text x="105" y="103" font-size="9" fill="#94a3b8" text-anchor="middle">Now subtract from: 3x + 2y = 13</text>
+    <line x1="8" y1="107" x2="202" y2="107" stroke="#94a3b8" stroke-width="1"/>
+    <!-- subtraction working -->
+    <text x="30" y="124" font-size="11" fill="#4338CA" font-family="monospace">3x + 12y = 33</text>
+    <text x="30" y="140" font-size="11" fill="#0f766e" font-family="monospace">3x +  2y = 13</text>
+    <line x1="28" y1="145" x2="182" y2="145" stroke="#1a1a1a" stroke-width="1.5"/>
+    <text x="14" y="143" font-size="14" fill="#1a1a1a">−</text>
+    <!-- result -->
+    <rect x="28" y="150" width="154" height="24" rx="4" fill="#fef2f2" stroke="#fca5a5" stroke-width="1"/>
+    <text x="105" y="166" font-size="12" fill="#dc2626" font-weight="700" text-anchor="middle" font-family="monospace">10y = 20  →  y = 2</text>
+  </svg>
+  <div class="se-rule">Multiplying both sides keeps the equation true. Choose multipliers so <span>one variable cancels</span> when you subtract.</div>
+</div>
+
+</div>
+<div style="margin-top:10px;padding:8px 10px;background:var(--amber-light);border-radius:6px;border-left:3px solid var(--amber);font-size:11px;color:var(--amber)">
+  <strong>The visual shortcut:</strong> If you drew both equations as lines on a graph, the answer is just where they cross. The algebra is just a precise way of finding that crossing point without drawing anything.
+</div>
+`
+  },
+  7: {
+    label: 'Vectors — how to trace routes and prove properties',
+    html: `
+<style>
+.vt-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-top:4px}
+.vt-card{border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--surface2)}
+.vt-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:2px}
+.vt-sub{font-size:11px;color:var(--ink3);margin-bottom:6px;line-height:1.3}
+.vt-rule{font-size:11px;color:var(--ink2);line-height:1.4;margin-top:6px}
+.vt-rule span{font-weight:600;color:var(--accent)}
+</style>
+<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">The key skill is choosing a route using only vectors you already know. You can always go via an intermediate point.</div>
+<div class="vt-grid">
+
+<div class="vt-card">
+  <div class="vt-title">Adding vectors: a + b</div>
+  <div class="vt-sub">Go along a, then along b</div>
+  <svg viewBox="0 0 180 140" width="100%" style="display:block">
+    <defs>
+      <marker id="va1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4338CA"/></marker>
+      <marker id="va2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0f766e"/></marker>
+      <marker id="va3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/></marker>
+    </defs>
+    <!-- O to A: vector a -->
+    <line x1="25" y1="110" x2="120" y2="110" stroke="#4338CA" stroke-width="2.5" marker-end="url(#va1)"/>
+    <text x="68" y="107" font-size="11" fill="#4338CA" font-weight="bold">a</text>
+    <!-- A to B: vector b -->
+    <line x1="122" y1="110" x2="155" y2="42" stroke="#0f766e" stroke-width="2.5" marker-end="url(#va2)"/>
+    <text x="147" y="80" font-size="11" fill="#0f766e" font-weight="bold">b</text>
+    <!-- O to B: resultant a+b -->
+    <line x1="25" y1="110" x2="151" y2="45" stroke="#dc2626" stroke-width="2" stroke-dasharray="5,3" marker-end="url(#va3)"/>
+    <text x="72" y="68" font-size="10" fill="#dc2626" font-weight="bold">a + b</text>
+    <!-- labels -->
+    <circle cx="25" cy="110" r="3" fill="#1a1a1a"/>
+    <circle cx="122" cy="110" r="3" fill="#1a1a1a"/>
+    <circle cx="155" cy="42" r="3" fill="#1a1a1a"/>
+    <text x="15" y="122" font-size="10" fill="#1a1a1a" font-weight="600">O</text>
+    <text x="122" y="123" font-size="10" fill="#1a1a1a" font-weight="600">A</text>
+    <text x="157" y="42" font-size="10" fill="#1a1a1a" font-weight="600">B</text>
+  </svg>
+  <div class="vt-rule">→OB = →OA + →AB = <span>a + b</span><br>Red = the direct route you're finding</div>
+</div>
+
+<div class="vt-card">
+  <div class="vt-title">Going "against the arrow"</div>
+  <div class="vt-sub">Travelling against an arrow negates the vector</div>
+  <svg viewBox="0 0 180 140" width="100%" style="display:block">
+    <defs>
+      <marker id="vb1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4338CA"/></marker>
+      <marker id="vb2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/></marker>
+      <marker id="vb3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0f766e"/></marker>
+    </defs>
+    <!-- O to A: vector a (known direction) -->
+    <line x1="25" y1="80" x2="130" y2="80" stroke="#4338CA" stroke-width="2.5" marker-end="url(#vb1)"/>
+    <text x="73" y="76" font-size="11" fill="#4338CA" font-weight="bold">a</text>
+    <!-- O to B: vector b -->
+    <line x1="25" y1="80" x2="80" y2="30" stroke="#0f766e" stroke-width="2.5" marker-end="url(#vb3)"/>
+    <text x="42" y="50" font-size="11" fill="#0f766e" font-weight="bold">b</text>
+    <!-- Want: A to B — go from A backwards along a, then forward along b -->
+    <!-- A to O: −a (against arrow) -->
+    <line x1="128" y1="80" x2="30" y2="80" stroke="#dc2626" stroke-width="2" stroke-dasharray="4,2" marker-end="url(#vb2)"/>
+    <text x="73" y="95" font-size="9" fill="#dc2626" font-weight="bold">−a</text>
+    <!-- O to B: b -->
+    <line x1="25" y1="78" x2="78" y2="32" stroke="#dc2626" stroke-width="2.5" marker-end="url(#vb2)"/>
+    <!-- Direct A to B arrow -->
+    <line x1="130" y1="78" x2="82" y2="32" stroke="#b45309" stroke-width="2.5" marker-end="url(#vb2)" stroke-dasharray="1,0"/>
+    <text x="118" y="52" font-size="10" fill="#b45309" font-weight="bold">b−a</text>
+    <!-- labels -->
+    <circle cx="25" cy="80" r="3" fill="#1a1a1a"/>
+    <circle cx="130" cy="80" r="3" fill="#1a1a1a"/>
+    <circle cx="80" cy="30" r="3" fill="#1a1a1a"/>
+    <text x="14" y="92" font-size="10" fill="#1a1a1a" font-weight="600">O</text>
+    <text x="132" y="92" font-size="10" fill="#1a1a1a" font-weight="600">A</text>
+    <text x="82" y="28" font-size="10" fill="#1a1a1a" font-weight="600">B</text>
+  </svg>
+  <div class="vt-rule">→AB = →AO + →OB = <span>−a + b = b − a</span><br>Going against an arrow flips the sign</div>
+</div>
+
+<div class="vt-card">
+  <div class="vt-title">Midpoints halve the vector</div>
+  <div class="vt-sub">M is midpoint of AB → →AM = ½ →AB</div>
+  <svg viewBox="0 0 180 140" width="100%" style="display:block">
+    <defs>
+      <marker id="vc1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4338CA"/></marker>
+      <marker id="vc2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#0f766e"/></marker>
+      <marker id="vc3" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/></marker>
+    </defs>
+    <!-- O to A -->
+    <line x1="30" y1="110" x2="60" y2="40" stroke="#4338CA" stroke-width="2.5" marker-end="url(#vc1)"/>
+    <text x="18" y="75" font-size="11" fill="#4338CA" font-weight="bold">a</text>
+    <!-- O to B -->
+    <line x1="30" y1="110" x2="150" y2="90" stroke="#0f766e" stroke-width="2.5" marker-end="url(#vc2)"/>
+    <text x="88" y="108" font-size="11" fill="#0f766e" font-weight="bold">b</text>
+    <!-- A to B -->
+    <line x1="62" y1="40" x2="148" y2="89" stroke="#94a3b8" stroke-width="1.5" stroke-dasharray="4,2"/>
+    <!-- midpoint M -->
+    <circle cx="105" cy="65" r="4" fill="#dc2626"/>
+    <text x="109" y="62" font-size="10" fill="#dc2626" font-weight="600">M</text>
+    <!-- O to M -->
+    <line x1="30" y1="108" x2="102" y2="66" stroke="#dc2626" stroke-width="2" marker-end="url(#vc3)"/>
+    <text x="56" y="82" font-size="9" fill="#dc2626" font-weight="bold">½(a+b)</text>
+    <!-- tick marks for equal halves on AB -->
+    <line x1="82" y1="52" x2="86" y2="48" stroke="#64748b" stroke-width="1.5"/>
+    <line x1="126" y1="77" x2="130" y2="73" stroke="#64748b" stroke-width="1.5"/>
+    <!-- labels -->
+    <circle cx="30" cy="110" r="3" fill="#1a1a1a"/>
+    <circle cx="60" cy="40" r="3" fill="#1a1a1a"/>
+    <circle cx="150" cy="90" r="3" fill="#1a1a1a"/>
+    <text x="18" y="122" font-size="10" fill="#1a1a1a" font-weight="600">O</text>
+    <text x="58" y="36" font-size="10" fill="#1a1a1a" font-weight="600">A</text>
+    <text x="152" y="92" font-size="10" fill="#1a1a1a" font-weight="600">B</text>
+  </svg>
+  <div class="vt-rule">→OM = →OA + ½→AB = a + ½(b−a) = <span>½(a+b)</span></div>
+</div>
+
+<div class="vt-card">
+  <div class="vt-title">Proving lines parallel</div>
+  <div class="vt-sub">If →XY = k×→PQ, the lines are parallel</div>
+  <svg viewBox="0 0 180 140" width="100%" style="display:block">
+    <defs>
+      <marker id="vd1" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#4338CA"/></marker>
+      <marker id="vd2" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L7,3 L0,6 Z" fill="#dc2626"/></marker>
+    </defs>
+    <!-- PQ vector -->
+    <line x1="20" y1="55" x2="100" y2="35" stroke="#4338CA" stroke-width="2.5" marker-end="url(#vd1)"/>
+    <text x="54" y="36" font-size="10" fill="#4338CA" font-weight="bold">→PQ = 2a + b</text>
+    <!-- XY vector — parallel, twice as long -->
+    <line x1="30" y1="110" x2="150" y2="80" stroke="#dc2626" stroke-width="2.5" marker-end="url(#vd2)"/>
+    <text x="72" y="108" font-size="10" fill="#dc2626" font-weight="bold">→XY = 4a + 2b</text>
+    <!-- parallel arrows indicator -->
+    <text x="56" y="70" font-size="18" fill="#94a3b8" opacity="0.6">∥</text>
+    <!-- labels -->
+    <circle cx="20" cy="55" r="3" fill="#4338CA"/>
+    <circle cx="100" cy="35" r="3" fill="#4338CA"/>
+    <circle cx="30" cy="110" r="3" fill="#dc2626"/>
+    <circle cx="150" cy="80" r="3" fill="#dc2626"/>
+    <text x="8" y="54" font-size="10" fill="#4338CA" font-weight="600">P</text>
+    <text x="102" y="34" font-size="10" fill="#4338CA" font-weight="600">Q</text>
+    <text x="18" y="122" font-size="10" fill="#dc2626" font-weight="600">X</text>
+    <text x="152" y="82" font-size="10" fill="#dc2626" font-weight="600">Y</text>
+  </svg>
+  <div class="vt-rule">→XY = <span>2 × →PQ</span>, so XY is parallel to PQ and twice its length. Write this conclusion explicitly.</div>
+</div>
+
+</div>
+<div style="margin-top:10px;padding:8px 10px;background:var(--amber-light);border-radius:6px;border-left:3px solid var(--amber);font-size:11px;color:var(--amber)">
+  <strong>Exam technique:</strong> Always write out the vector journey step by step (→OB = →OA + →AB). Never skip steps — method marks are given for each correct line.
+</div>
+`
+  },
+  14: {
+    label: 'Function transformations — what each notation does',
+    html: `
+<style>
+.ft-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:10px;margin-top:4px}
+.ft-card{border:1px solid var(--border);border-radius:8px;padding:10px;background:var(--surface2)}
+.ft-notation{font-size:14px;font-weight:700;color:var(--accent);font-family:monospace;margin-bottom:2px}
+.ft-title{font-size:11px;font-weight:600;color:var(--ink);margin-bottom:5px}
+.ft-rule{font-size:11px;color:var(--ink2);line-height:1.4;margin-top:5px}
+.ft-rule span{font-weight:600;color:var(--accent)}
+.ft-warn{font-size:10px;color:var(--red);font-weight:600;margin-top:3px}
+</style>
+<div style="font-size:12px;color:var(--ink3);margin-bottom:8px">Grey dashed = original y = f(x). Coloured = transformed. Watch where the key points move.</div>
+<div class="ft-grid">
+
+<div class="ft-card">
+  <div class="ft-notation">f(x + 2)</div>
+  <div class="ft-title">Shift LEFT by 2</div>
+  <svg viewBox="0 0 160 120" width="100%" style="display:block">
+    <defs><marker id="ax1" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#94a3b8"/></marker></defs>
+    <line x1="15" y1="90" x2="150" y2="90" stroke="#94a3b8" stroke-width="1" marker-end="url(#ax1)"/>
+    <line x1="80" y1="110" x2="80" y2="10" stroke="#94a3b8" stroke-width="1"/>
+    <!-- original: vertex at (80,50) -->
+    <polyline points="20,88 40,72 60,58 80,50 100,58 120,72 140,88" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+    <!-- shifted left by 24px (2 units): vertex at (56,50) -->
+    <polyline points="0,88 16,72 36,58 56,50 76,58 96,72 116,88" fill="none" stroke="#4338CA" stroke-width="2.5"/>
+    <circle cx="80" cy="50" r="3" fill="#cbd5e1"/>
+    <circle cx="56" cy="50" r="3.5" fill="#4338CA"/>
+    <text x="82" y="49" font-size="7" fill="#94a3b8">(0,0)</text>
+    <text x="30" y="47" font-size="7" fill="#4338CA">(−2,0)</text>
+  </svg>
+  <div class="ft-rule">Inside bracket: <span>opposite direction</span> to sign</div>
+  <div class="ft-warn">⚠️ +2 inside = moves LEFT</div>
+</div>
+
+<div class="ft-card">
+  <div class="ft-notation">f(x) + 2</div>
+  <div class="ft-title">Shift UP by 2</div>
+  <svg viewBox="0 0 160 120" width="100%" style="display:block">
+    <defs><marker id="ax2" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#94a3b8"/></marker></defs>
+    <line x1="15" y1="90" x2="150" y2="90" stroke="#94a3b8" stroke-width="1" marker-end="url(#ax2)"/>
+    <line x1="80" y1="110" x2="80" y2="10" stroke="#94a3b8" stroke-width="1"/>
+    <!-- original: vertex at (80,70) -->
+    <polyline points="20,88 40,80 60,74 80,70 100,74 120,80 140,88" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+    <!-- shifted up by 24px: vertex at (80,46) -->
+    <polyline points="20,64 40,56 60,50 80,46 100,50 120,56 140,64" fill="none" stroke="#16a34a" stroke-width="2.5"/>
+    <circle cx="80" cy="70" r="3" fill="#cbd5e1"/>
+    <circle cx="80" cy="46" r="3.5" fill="#16a34a"/>
+    <text x="83" y="72" font-size="7" fill="#94a3b8">(0,0)</text>
+    <text x="83" y="45" font-size="7" fill="#16a34a">(0,2)</text>
+    <line x1="80" y1="67" x2="80" y2="50" stroke="#16a34a" stroke-width="1" stroke-dasharray="2,2"/>
+  </svg>
+  <div class="ft-rule">Outside bracket: <span>same direction</span> as sign. +2 = up 2</div>
+</div>
+
+<div class="ft-card">
+  <div class="ft-notation">f(−x)</div>
+  <div class="ft-title">Reflect in y-axis</div>
+  <svg viewBox="0 0 160 120" width="100%" style="display:block">
+    <defs><marker id="ax3" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#94a3b8"/></marker></defs>
+    <line x1="15" y1="90" x2="150" y2="90" stroke="#94a3b8" stroke-width="1" marker-end="url(#ax3)"/>
+    <line x1="80" y1="110" x2="80" y2="10" stroke="#94a3b8" stroke-width="1"/>
+    <!-- original asymmetric curve, right side only -->
+    <polyline points="80,70 95,58 110,44 125,34 140,28" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+    <polyline points="20,82 40,80 60,76 80,70" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+    <!-- reflected in y-axis -->
+    <polyline points="80,70 65,58 50,44 35,34 20,28" fill="none" stroke="#b45309" stroke-width="2.5"/>
+    <polyline points="140,82 120,80 100,76 80,70" fill="none" stroke="#b45309" stroke-width="2.5"/>
+    <circle cx="140" cy="28" r="3" fill="#cbd5e1"/>
+    <circle cx="20" cy="28" r="3.5" fill="#b45309"/>
+    <text x="142" y="27" font-size="7" fill="#94a3b8">(3,a)</text>
+    <text x="2" y="27" font-size="7" fill="#b45309">(−3,a)</text>
+    <line x1="80" y1="12" x2="80" y2="88" stroke="#b45309" stroke-width="1" stroke-dasharray="3,2" opacity="0.35"/>
+  </svg>
+  <div class="ft-rule"><span>x changes sign</span>, y stays same. Mirror in y-axis</div>
+</div>
+
+<div class="ft-card">
+  <div class="ft-notation">−f(x)</div>
+  <div class="ft-title">Reflect in x-axis</div>
+  <svg viewBox="0 0 160 120" width="100%" style="display:block">
+    <defs><marker id="ax4" markerWidth="5" markerHeight="5" refX="4" refY="2.5" orient="auto"><path d="M0,0 L5,2.5 L0,5 Z" fill="#94a3b8"/></marker></defs>
+    <line x1="15" y1="60" x2="150" y2="60" stroke="#94a3b8" stroke-width="1" marker-end="url(#ax4)"/>
+    <line x1="80" y1="110" x2="80" y2="10" stroke="#94a3b8" stroke-width="1"/>
+    <!-- original: upward parabola, vertex at (80,35) -->
+    <polyline points="20,58 40,48 60,40 80,35 100,40 120,48 140,58" fill="none" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="5,3"/>
+    <!-- reflected in x-axis: vertex now at (80,85) -->
+    <polyline points="20,62 40,72 60,80 80,85 100,80 120,72 140,62" fill="none" stroke="#dc2626" stroke-width="2.5"/>
+    <circle cx="80" cy="35" r="3" fill="#cbd5e1"/>
+    <circle cx="80" cy="85" r="3.5" fill="#dc2626"/>
+    <text x="83" y="34" font-size="7" fill="#94a3b8">(0,3)</text>
+    <text x="83" y="90" font-size="7" fill="#dc2626">(0,−3)</text>
+    <line x1="20" y1="60" x2="150" y2="60" stroke="#dc2626" stroke-width="1" stroke-dasharray="3,2" opacity="0.35"/>
+  </svg>
+  <div class="ft-rule"><span>y changes sign</span>, x stays same. Mirror in x-axis</div>
+</div>
+
+</div>
+<div style="margin-top:10px;padding:8px 10px;background:var(--amber-light);border-radius:6px;border-left:3px solid var(--amber);font-size:11px;color:var(--amber)">
+  <strong>The golden rule:</strong> Inside the bracket affects x and works <em>backwards</em>. Outside the bracket affects y and works <em>as expected</em>.
+</div>
+`
+  }
+};
+
+
 let conf      = {};
 let tutorMsgs = {};   // { archetypeId: [{role, content}] }
 let panelOpen = {};   // { 'tutor_N': bool, 'qfetch_N': bool }
@@ -889,6 +1579,7 @@ function setActive(id) {
 function showOverview() {
   currentView = 'overview';
   setActive(-1);
+  document.getElementById('backBtn').style.display = 'none';
   document.getElementById('mainTitle').textContent = 'Overview';
   document.getElementById('mainBadge').textContent = '';
 
@@ -1003,6 +1694,7 @@ function showArchetype(id) {
   const qi      = qIdx[id] || 0;
   const q       = qs[qi];
 
+  document.getElementById('backBtn').style.display = 'inline-flex';
   document.getElementById('mainTitle').textContent = a.name;
   const badge = document.getElementById('mainBadge');
   badge.style.cssText = `font-size:10px;padding:2px 8px;border-radius:20px;font-weight:500;${TOPIC_CSS[a.topic]||''}`;
@@ -1073,6 +1765,12 @@ function showArchetype(id) {
     <div class="card-label">How to crack it — step by step</div>
     <div class="steps">${stepsH}</div>
   </div>
+
+  ${DIAGRAMS[id] ? `
+  <div class="card">
+    <div class="card-label">📐 ${DIAGRAMS[id].label}</div>
+    ${DIAGRAMS[id].html}
+  </div>` : ''}
 
   <div class="panel-wrap">
     <div class="panel-header panel-header-accent${tOpen?' open':''}" onclick="togglePanel('${tutorKey}',${id})">
@@ -1277,6 +1975,12 @@ function escHtml(str) {
   return str
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/\n/g,'<br>');
+}
+
+// Used by the circle theorems diagram (id 2) — highlights a clicked theorem card
+function selectCT(el) {
+  document.querySelectorAll('.ct-card').forEach(c => c.classList.remove('active'));
+  el.classList.add('active');
 }
 
 // ─────────────────────────────────────────────
